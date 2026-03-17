@@ -1,0 +1,3247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultation Management - Quadelo Technologies</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="css/admin-style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Consultation Management Specific Styles */
+        :root {
+            --primary-blue: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-blue: #0ea5e9;
+            --success-green: #16a34a;
+            --warning-yellow: #f59e0b;
+            --danger-red: #dc2626;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --sidebar-width: 280px;
+            --sidebar-collapsed-width: 80px;
+        }
+
+        /* ===== SIDEBAR AND MAIN LAYOUT FIXES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            background: var(--gray-50);
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            border-right: 1px solid var(--gray-200);
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+
+        .sidebar.collapsed .sidebar-header .logo span,
+        .sidebar.collapsed .sidebar-nav a span,
+        .sidebar.collapsed .admin-info div {
+            display: none;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo span {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .logo span span {
+            color: var(--primary-blue);
+        }
+
+        .toggle-sidebar {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--gray-500);
+            font-size: 1.2rem;
+            padding: 5px;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin: 5px 0;
+        }
+
+        .sidebar-nav li.active a {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: white;
+            margin: 0 10px;
+            border-radius: 8px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: var(--gray-600);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .sidebar-nav a:hover {
+            background: var(--gray-100);
+            color: var(--primary-blue);
+        }
+
+        .sidebar-nav i {
+            width: 20px;
+        }
+
+        .badge {
+            margin-left: auto;
+            background: var(--gray-200);
+            color: var(--gray-700);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--gray-200);
+            margin: 20px 10px;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--gray-200);
+            background: white;
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+            width: calc(100% - var(--sidebar-width));
+            min-height: 100vh;
+            background: var(--gray-50);
+        }
+
+        .sidebar.collapsed + .main-content {
+            margin-left: var(--sidebar-collapsed-width);
+            width: calc(100% - var(--sidebar-collapsed-width));
+        }
+
+        /* Mobile menu button */
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1002;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 15px;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            font-size: 1.2rem;
+        }
+
+        /* Sidebar overlay for mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            backdrop-filter: blur(3px);
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Top bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 10px 0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .page-title h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            color: var(--gray-900);
+        }
+
+        .page-title p {
+            color: var(--gray-500);
+            font-size: 0.95rem;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Refresh Indicator */
+        .refresh-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: var(--gray-100);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            border: 1px solid var(--gray-200);
+        }
+
+        .refresh-indicator i {
+            color: var(--primary-blue);
+        }
+
+        /* Filters Bar */
+        .filters-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            background: white;
+            padding: 20px 24px;
+            border-radius: 16px;
+            border: 1px solid var(--gray-200);
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filters-bar .search-box {
+            flex: 1;
+            min-width: 280px;
+            position: relative;
+        }
+
+        .filters-bar .search-box i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+            font-size: 1rem;
+        }
+
+        .filters-bar .search-box input {
+            width: 100%;
+            padding: 12px 12px 12px 42px;
+            border: 1px solid var(--gray-300);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-50);
+        }
+
+        .filters-bar .search-box input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            background: white;
+        }
+
+        .filters-bar select {
+            padding: 12px 16px;
+            border: 1px solid var(--gray-300);
+            border-radius: 12px;
+            outline: none;
+            min-width: 160px;
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-50);
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: var(--gray-700);
+            transition: all 0.3s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 20px;
+            padding-right: 40px;
+        }
+
+        .filters-bar select:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            background-color: white;
+        }
+
+        /* Enhanced Action Buttons */
+        .action-btn-icon {
+            background: none;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--gray-600);
+            transition: all 0.2s ease;
+            margin: 0 3px;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-btn-icon:hover {
+            transform: translateY(-2px);
+        }
+
+        .action-btn-icon.view {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .action-btn-icon.view:hover {
+            background: #0284c7;
+            color: white;
+        }
+
+        .action-btn-icon.edit {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .action-btn-icon.edit:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+        .action-btn-icon.delete {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .action-btn-icon.delete:hover {
+            background: #dc2626;
+            color: white;
+        }
+
+        .action-btn-icon.complete {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .action-btn-icon.complete:hover {
+            background: #16a34a;
+            color: white;
+        }
+
+        .action-btn-icon.cancel {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .action-btn-icon.cancel:hover {
+            background: #dc2626;
+            color: white;
+        }
+
+        .action-btn-icon.remind {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .action-btn-icon.remind:hover {
+            background: #d97706;
+            color: white;
+        }
+
+        .action-btn-icon.notes {
+            background: #f3e8ff;
+            color: #7e22ce;
+        }
+
+        .action-btn-icon.notes:hover {
+            background: #9333ea;
+            color: white;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-scheduled { background: #dbeafe; color: #2563eb; }
+        .status-confirmed { background: #dcfce7; color: #16a34a; }
+        .status-completed { background: #e2e8f0; color: #475569; }
+        .status-cancelled { background: #fee2e2; color: #dc2626; }
+        .status-no-show { background: #fef3c7; color: #d97706; }
+        .status-rescheduled { background: #f3e8ff; color: #9333ea; }
+
+        /* Type Badges */
+        .type-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .type-technical {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .type-business {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .type-strategy {
+            background: #f3e8ff;
+            color: #9333ea;
+        }
+
+        .type-support {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        /* Mode Badges */
+        .mode-badge {
+            padding: 4px 8px;
+            border-radius: 16px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .mode-online {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .mode-inperson {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .mode-phone {
+            background: #f3e8ff;
+            color: #9333ea;
+        }
+
+        /* Stats Summary */
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-mini-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--gray-200);
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-mini-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-mini-card h4 {
+            font-size: 2rem;
+            color: var(--gray-900);
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .stat-mini-card p {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .stat-mini-card.total { border-top: 4px solid #2563eb; }
+        .stat-mini-card.scheduled { border-top: 4px solid #f59e0b; }
+        .stat-mini-card.completed { border-top: 4px solid #16a34a; }
+        .stat-mini-card.cancelled { border-top: 4px solid #dc2626; }
+
+        /* Action Bar */
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .action-bar .btn-primary {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .action-bar .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-outline {
+            padding: 12px 24px;
+            background: white;
+            border: 1px solid var(--gray-300);
+            border-radius: 30px;
+            color: var(--gray-700);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .btn-outline:hover {
+            background: var(--gray-100);
+            border-color: var(--primary-blue);
+        }
+
+        .btn-danger {
+            padding: 12px 24px;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        /* Bulk Actions */
+        .bulk-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 16px 20px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+            border: 1px solid var(--gray-200);
+            flex-wrap: wrap;
+        }
+
+        .bulk-actions.show {
+            display: flex;
+        }
+
+        .bulk-actions select {
+            padding: 10px 14px;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            min-width: 160px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .checkbox-col {
+            width: 40px;
+            text-align: center;
+        }
+
+        .checkbox-col input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary-blue);
+        }
+
+        /* Table Styles */
+        .table-responsive {
+            overflow-x: auto;
+            max-height: 600px;
+            overflow-y: auto;
+            border-radius: 16px;
+            background: white;
+            box-shadow: var(--shadow-md);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+        }
+
+        .data-table th {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(to bottom, var(--gray-50), var(--gray-100));
+            z-index: 10;
+            padding: 16px 12px;
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--gray-700);
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .data-table td {
+            padding: 16px 12px;
+            border-bottom: 1px solid var(--gray-200);
+            vertical-align: middle;
+        }
+
+        .data-table tbody tr:hover {
+            background: var(--gray-50);
+        }
+
+        .client-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .client-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .consultant-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .consultant-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .datetime-info {
+            font-size: 0.9rem;
+        }
+
+        .datetime-info small {
+            color: var(--gray-500);
+            font-size: 0.8rem;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray-200);
+            flex-wrap: wrap;
+        }
+
+        .pagination-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--gray-300);
+            background: white;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--gray-700);
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 99999 !important;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: 30px auto !important;
+            padding: 0;
+            border: none;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.3s ease-out;
+            z-index: 100000 !important;
+            overflow: hidden;
+        }
+
+        .modal-content.modal-lg {
+            max-width: 1000px;
+        }
+
+        .modal-content.modal-sm {
+            max-width: 400px;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header.delete-header {
+            background: #dc2626;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .modal-header .close {
+            color: white;
+            font-size: 28px;
+            font-weight: 300;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.3s, transform 0.3s;
+            line-height: 1;
+        }
+
+        .modal-header .close:hover {
+            opacity: 1;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 25px;
+            max-height: 70vh;
+            overflow-y: auto;
+            background: #f8fafc;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* Form Styles */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-row-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--gray-700);
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .form-check input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #2563eb;
+        }
+
+        .required::after {
+            content: '*';
+            color: #dc2626;
+            margin-left: 4px;
+        }
+
+        .small-text {
+            color: var(--gray-500);
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+
+        /* Tabs */
+        .form-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .form-tab {
+            padding: 8px 16px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: #64748b;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .form-tab:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .form-tab.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* Notes Section */
+        .notes-section {
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: white;
+        }
+
+        .notes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .notes-header h4 {
+            font-size: 1.1rem;
+            color: var(--gray-800);
+            font-weight: 600;
+        }
+
+        .note-item {
+            background: var(--gray-50);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .note-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+        }
+
+        .note-author {
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+
+        .note-date {
+            color: var(--gray-500);
+        }
+
+        .note-content {
+            color: var(--gray-700);
+            font-size: 0.95rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray-500);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--gray-300);
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .empty-state p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Notification Toast */
+        .notification-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-left: 4px solid var(--primary-blue);
+            box-shadow: var(--shadow-lg);
+            padding: 15px 20px;
+            border-radius: 8px;
+            z-index: 1000000;
+            display: none;
+            animation: slideIn 0.3s ease;
+            min-width: 300px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification-toast.show {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notification-toast.success { border-left-color: #10b981; }
+        .notification-toast.error { border-left-color: #ef4444; }
+        .notification-toast.warning { border-left-color: #f59e0b; }
+
+        /* Loading States */
+        .btn-primary.loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.7;
+            padding-right: 45px;
+        }
+
+        .btn-primary.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        @keyframes spin {
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(37, 99, 235, 0.2);
+            border-top-color: var(--primary-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px !important;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 60px 15px 15px 15px;
+            }
+            
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .stats-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .filters-bar {
+                flex-direction: column;
+            }
+            
+            .filters-bar select,
+            .filters-bar .search-box {
+                width: 100%;
+            }
+            
+            .action-bar {
+                flex-direction: column;
+            }
+            
+            .action-bar .btn-primary,
+            .export-dropdown {
+                width: 100%;
+            }
+            
+            .bulk-actions {
+                flex-direction: column;
+            }
+            
+            .bulk-actions select {
+                width: 100%;
+            }
+            
+            .form-row,
+            .form-row-3,
+            .form-row-4 {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-footer {
+                flex-direction: column-reverse;
+            }
+            
+            .modal-footer .btn-primary,
+            .modal-footer .btn-outline {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-summary {
+                grid-template-columns: 1fr;
+            }
+            
+            .refresh-indicator span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileMenu()"></div>
+
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-cube" style="font-size: 2rem; color: var(--primary-blue);"></i>
+                    <span>Quadelo<span>Tech</span></span>
+                </div>
+                <button class="toggle-sidebar" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="admin-dashboard.html">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-users.html">
+                            <i class="fas fa-users"></i>
+                            <span>Users</span>
+                            <span class="badge" id="userCount">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-courses.html">
+                            <i class="fas fa-book"></i>
+                            <span>Courses</span>
+                            <span class="badge" id="courseCount">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-services.html">
+                            <i class="fas fa-cogs"></i>
+                            <span>Services</span>
+                            <span class="badge" id="serviceCount">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-projects.html">
+                            <i class="fas fa-project-diagram"></i>
+                            <span>Projects</span>
+                            <span class="badge" id="projectCount">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-systems.html">
+                            <i class="fas fa-microchip"></i>
+                            <span>Systems</span>
+                            <span class="badge" id="systemCount">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-enrollments.html">
+                            <i class="fas fa-user-graduate"></i>
+                            <span>Enrollments</span>
+                            <span class="badge" id="enrollmentCount">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-invoices.html">
+                            <i class="fas fa-file-invoice"></i>
+                            <span>Invoices</span>
+                            <span class="badge" id="invoiceCount">0</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="admin-consultation.html">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Consultations</span>
+                            <span class="badge" id="consultationCount">0</span>
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="admin-settings.html">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="admin-info">
+                    <img src="" alt="Admin" id="adminAvatar">
+                    <div>
+                        <p id="adminName">Loading...</p>
+                        <small>Administrator</small>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="page-title">
+                    <h1>Consultation Management</h1>
+                    <p>Manage all client consultations and appointments</p>
+                </div>
+                <div class="top-bar-actions">
+                    <div class="refresh-indicator" id="refreshIndicator">
+                        <i class="fas fa-sync-alt"></i>
+                        <span id="lastUpdated">Updating...</span>
+                    </div>
+                    <button class="refresh-btn" onclick="loadConsultations()" title="Refresh">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Stats Summary -->
+            <div class="stats-summary" id="statsSummary">
+                <div class="stat-mini-card total">
+                    <h4 id="totalConsultations">0</h4>
+                    <p>Total Consultations</p>
+                </div>
+                <div class="stat-mini-card scheduled">
+                    <h4 id="scheduledCount">0</h4>
+                    <p>Scheduled</p>
+                </div>
+                <div class="stat-mini-card completed">
+                    <h4 id="completedCount">0</h4>
+                    <p>Completed</p>
+                </div>
+                <div class="stat-mini-card cancelled">
+                    <h4 id="cancelledCount">0</h4>
+                    <p>Cancelled</p>
+                </div>
+            </div>
+
+            <!-- Action Bar -->
+            <div class="action-bar">
+                <button class="btn-primary" onclick="openAddConsultationModal()">
+                    <i class="fas fa-plus"></i> Schedule New Consultation
+                </button>
+                
+                <div class="export-dropdown">
+                    <button class="btn-outline">
+                        <i class="fas fa-download"></i> Export <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="export-dropdown-content">
+                        <a href="#" onclick="exportConsultations('csv')">
+                            <i class="fas fa-file-csv"></i> Export as CSV
+                        </a>
+                        <a href="#" onclick="exportConsultations('excel')">
+                            <i class="fas fa-file-excel"></i> Export as Excel
+                        </a>
+                        <a href="#" onclick="exportConsultations('pdf')">
+                            <i class="fas fa-file-pdf"></i> Export as PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bulk Actions -->
+            <div class="bulk-actions" id="bulkActions">
+                <span><span id="selectedCount">0</span> consultations selected</span>
+                <select id="bulkActionSelect">
+                    <option value="">Select action</option>
+                    <option value="confirm">Confirm selected</option>
+                    <option value="complete">Mark as completed</option>
+                    <option value="cancel">Cancel selected</option>
+                    <option value="delete">Delete selected</option>
+                </select>
+                <button class="btn-primary" onclick="applyBulkAction()">Apply</button>
+                <button class="btn-outline" onclick="clearSelection()">Clear</button>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters-bar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search by client, consultant or topic..." onkeyup="filterConsultations()">
+                </div>
+                
+                <select id="statusFilter" onchange="filterConsultations()">
+                    <option value="">All Status</option>
+                    <option value="Scheduled">Scheduled</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                    <option value="No-show">No-show</option>
+                    <option value="Rescheduled">Rescheduled</option>
+                </select>
+                
+                <select id="typeFilter" onchange="filterConsultations()">
+                    <option value="">All Types</option>
+                    <option value="Technical">Technical</option>
+                    <option value="Business">Business</option>
+                    <option value="Strategy">Strategy</option>
+                    <option value="Support">Support</option>
+                </select>
+                
+                <select id="consultantFilter" onchange="filterConsultations()">
+                    <option value="">All Consultants</option>
+                    <option value="john">John Instructor</option>
+                    <option value="sarah">Dr. Sarah Johnson</option>
+                    <option value="mike">Mike Chen</option>
+                </select>
+                
+                <select id="dateFilter" onchange="filterConsultations()">
+                    <option value="">Date Range</option>
+                    <option value="today">Today</option>
+                    <option value="tomorrow">Tomorrow</option>
+                    <option value="week">This Week</option>
+                    <option value="next-week">Next Week</option>
+                    <option value="month">This Month</option>
+                </select>
+                
+                <button class="btn-outline" onclick="resetFilters()">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+            </div>
+
+            <!-- Consultations Table -->
+            <div class="content-card">
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th class="checkbox-col">
+                                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                                </th>
+                                <th>Client</th>
+                                <th>Consultant</th>
+                                <th>Date & Time</th>
+                                <th>Duration</th>
+                                <th>Type</th>
+                                <th>Mode</th>
+                                <th>Topic</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="consultationsTableBody">
+                            <tr>
+                                <td colspan="10" class="empty-state">
+                                    <i class="fas fa-calendar-check"></i>
+                                    <p>Loading consultations...</p>
+                                    <div class="loading-spinner"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="pagination">
+                    <button class="pagination-btn" id="prevPage" onclick="changePage('prev')" disabled>
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    <span class="page-info" id="pageInfo">Page 1 of 1</span>
+                    <button class="pagination-btn" id="nextPage" onclick="changePage('next')">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Consultation Modal -->
+    <div id="consultationModal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2 id="modalTitle">Schedule New Consultation</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-tabs">
+                    <button class="form-tab active" onclick="switchTab('basic')">Basic Info</button>
+                    <button class="form-tab" onclick="switchTab('details')">Details</button>
+                    <button class="form-tab" onclick="switchTab('notes')">Notes</button>
+                </div>
+                
+                <form id="consultationForm" onsubmit="saveConsultation(event)">
+                    <input type="hidden" id="consultationId">
+                    
+                    <!-- Basic Info Tab -->
+                    <div id="basic-tab" class="tab-pane active">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="required">Client</label>
+                                <select id="clientId" required>
+                                    <option value="">Select Client</option>
+                                    <option value="client1">Tech Corp</option>
+                                    <option value="client2">Green Building Inc</option>
+                                    <option value="client3">EduTech Solutions</option>
+                                    <option value="client4">Retail Solutions</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Consultant</label>
+                                <select id="consultantId" required>
+                                    <option value="">Select Consultant</option>
+                                    <option value="consultant1">John Instructor</option>
+                                    <option value="consultant2">Dr. Sarah Johnson</option>
+                                    <option value="consultant3">Mike Chen</option>
+                                    <option value="consultant4">Jane Student</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row-4">
+                            <div class="form-group">
+                                <label class="required">Date</label>
+                                <input type="date" id="consultationDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Start Time</label>
+                                <input type="time" id="startTime" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">End Time</label>
+                                <input type="time" id="endTime" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Duration</label>
+                                <input type="text" id="duration" readonly placeholder="Auto-calculated">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="required">Consultation Type</label>
+                                <select id="consultationType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Technical">Technical</option>
+                                    <option value="Business">Business</option>
+                                    <option value="Strategy">Strategy</option>
+                                    <option value="Support">Support</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Consultation Mode</label>
+                                <select id="consultationMode" required>
+                                    <option value="">Select Mode</option>
+                                    <option value="Online">Online (Video Call)</option>
+                                    <option value="In-person">In-person</option>
+                                    <option value="Phone">Phone Call</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Meeting Link (for online)</label>
+                                <input type="url" id="meetingLink" placeholder="https://meet.google.com/...">
+                            </div>
+                            <div class="form-group">
+                                <label>Location (for in-person)</label>
+                                <input type="text" id="location" placeholder="Office address or room">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="required">Topic / Subject</label>
+                            <input type="text" id="topic" required placeholder="e.g., Cloud Migration Strategy">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Related Project (optional)</label>
+                            <select id="relatedProject">
+                                <option value="">Select Project</option>
+                                <option value="proj1">Smart Manufacturing Robot</option>
+                                <option value="proj2">IoT Building Management</option>
+                                <option value="proj3">E-Commerce Platform</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select id="consultationStatus">
+                                    <option value="Scheduled">Scheduled</option>
+                                    <option value="Confirmed">Confirmed</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                    <option value="No-show">No-show</option>
+                                    <option value="Rescheduled">Rescheduled</option>
+                                </select>
+                            </div>
+                            <div class="form-check" style="align-self: flex-end;">
+                                <input type="checkbox" id="sendReminder" checked>
+                                <label>Send reminder email</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Details Tab -->
+                    <div id="details-tab" class="tab-pane">
+                        <div class="form-group">
+                            <label>Agenda / Description</label>
+                            <textarea id="agenda" rows="4" placeholder="Detailed agenda for the consultation..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Client Requirements</label>
+                            <textarea id="requirements" rows="3" placeholder="Specific requirements from the client..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Pre-consultation Notes</label>
+                            <textarea id="preNotes" rows="3" placeholder="Notes to prepare for the consultation..."></textarea>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Expected Outcome</label>
+                                <input type="text" id="expectedOutcome" placeholder="e.g., Project proposal, Technical solution">
+                            </div>
+                            <div class="form-group">
+                                <label>Priority</label>
+                                <select id="priority">
+                                    <option value="Normal">Normal</option>
+                                    <option value="High">High</option>
+                                    <option value="Urgent">Urgent</option>
+                                    <option value="Low">Low</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Attachments</label>
+                            <input type="file" id="attachments" multiple>
+                            <p class="small-text">Upload relevant documents (max 10MB)</p>
+                        </div>
+                        
+                        <div id="attachmentsList" style="margin-top: 10px;">
+                            <!-- Attachments will be listed here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Notes Tab -->
+                    <div id="notes-tab" class="tab-pane">
+                        <div class="notes-section">
+                            <div class="notes-header">
+                                <h4>Consultation Notes</h4>
+                                <button type="button" class="add-note-btn" onclick="addConsultationNote()">
+                                    <i class="fas fa-plus"></i> Add Note
+                                </button>
+                            </div>
+                            <div id="notesContainer">
+                                <!-- Notes will be added here dynamically -->
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Outcome / Summary</label>
+                            <textarea id="outcome" rows="4" placeholder="Summary of what was discussed and agreed upon..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Action Items</label>
+                            <textarea id="actionItems" rows="3" placeholder="Follow-up actions..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Next Steps</label>
+                            <textarea id="nextSteps" rows="3" placeholder="Next steps after this consultation..."></textarea>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Follow-up Date</label>
+                                <input type="date" id="followUpDate">
+                            </div>
+                            <div class="form-group">
+                                <label>Feedback Rating</label>
+                                <select id="feedbackRating">
+                                    <option value="">Not rated</option>
+                                    <option value="5">★★★★★ (Excellent)</option>
+                                    <option value="4">★★★★☆ (Good)</option>
+                                    <option value="3">★★★☆☆ (Average)</option>
+                                    <option value="2">★★☆☆☆ (Fair)</option>
+                                    <option value="1">★☆☆☆☆ (Poor)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn-outline" onclick="closeModal()">Cancel</button>
+                <button type="submit" form="consultationForm" class="btn-primary" id="saveBtn">Schedule Consultation</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Consultation Modal -->
+    <div id="viewConsultationModal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>Consultation Details</h2>
+                <span class="close" onclick="closeViewModal()">&times;</span>
+            </div>
+            
+            <div class="modal-body" id="consultationDetails">
+                <!-- Consultation details will be populated here -->
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn-outline" onclick="sendReminder()">
+                    <i class="fas fa-bell"></i> Send Reminder
+                </button>
+                <button type="button" class="btn-outline" onclick="downloadConsultation()">
+                    <i class="fas fa-download"></i> Download Summary
+                </button>
+                <button type="button" class="btn-primary" onclick="editFromView()">Edit Consultation</button>
+                <button type="button" class="btn-outline" onclick="closeViewModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Note Modal -->
+    <div id="noteModal" class="modal">
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h2>Add Note</h2>
+                <span class="close" onclick="closeNoteModal()">&times;</span>
+            </div>
+            
+            <div class="modal-body">
+                <form id="noteForm" onsubmit="saveNote(event)">
+                    <div class="form-group">
+                        <label class="required">Note</label>
+                        <textarea id="noteContent" rows="4" required placeholder="Enter your note here..."></textarea>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input type="checkbox" id="notePrivate">
+                        <label>Private (only visible to admin)</label>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" style="width: 100%;">Add Note</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content modal-sm">
+            <div class="modal-header delete-header">
+                <h2>Confirm Delete</h2>
+                <span class="close" onclick="closeDeleteModal()">&times;</span>
+            </div>
+            
+            <div class="modal-body">
+                <p id="deleteMessage" style="font-size: 1.1rem; text-align: center; padding: 20px;">
+                    Are you sure you want to delete this consultation? This action cannot be undone.
+                </p>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn-outline" onclick="closeDeleteModal()">Cancel</button>
+                <button type="button" class="btn-danger" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notificationToast" class="notification-toast">
+        <i class="fas fa-info-circle"></i>
+        <span id="notificationMessage"></span>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let allConsultations = [];
+        let filteredConsultations = [];
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let selectedConsultations = new Set();
+        let deleteConsultationId = null;
+        let currentViewConsultationId = null;
+
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            
+            if (!token || !user || user.role !== 'admin') {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Set user info
+            document.getElementById('adminName').textContent = user.name;
+            if (user.profile?.avatar) {
+                document.getElementById('adminAvatar').src = user.profile.avatar;
+            } else {
+                document.getElementById('adminAvatar').src = 'https://randomuser.me/api/portraits/men/1.jpg';
+            }
+
+            // Load navbar counts
+            loadNavbarCounts();
+            
+            // Load consultations
+            loadConsultations();
+            
+            // Set up duration calculator
+            document.getElementById('startTime').addEventListener('change', calculateDuration);
+            document.getElementById('endTime').addEventListener('change', calculateDuration);
+            
+            // Add window resize handler
+            window.addEventListener('resize', handleResize);
+        });
+
+        // Handle window resize
+        function handleResize() {
+            if (window.innerWidth > 768) {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                sidebar.classList.remove('active');
+                if (overlay) overlay.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Mobile menu functions
+        window.toggleMobileMenu = function() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : 'auto';
+        };
+
+        window.closeMobileMenu = function() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        };
+
+        // Close mobile menu when clicking nav links
+        document.querySelectorAll('.sidebar-nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    closeMobileMenu();
+                }
+            });
+        });
+
+        // Toggle sidebar
+        document.getElementById('toggleSidebar').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        });
+
+        // Load navbar counts
+        async function loadNavbarCounts() {
+            try {
+                const token = localStorage.getItem('token');
+                
+                // Load users count
+                try {
+                    const usersRes = await fetch(`${API_URL}/users`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const usersData = await usersRes.json();
+                    if (usersData.success) {
+                        document.getElementById('userCount').textContent = usersData.users?.length || 0;
+                    }
+                } catch (e) { console.error('Error loading users count:', e); }
+
+                // Load courses count
+                try {
+                    const coursesRes = await fetch(`${API_URL}/courses`);
+                    const coursesData = await coursesRes.json();
+                    if (coursesData.success) {
+                        document.getElementById('courseCount').textContent = coursesData.courses?.length || 0;
+                    }
+                } catch (e) { console.error('Error loading courses count:', e); }
+
+                // Load services count
+                try {
+                    const servicesRes = await fetch(`${API_URL}/services`);
+                    const servicesData = await servicesRes.json();
+                    if (servicesData.success) {
+                        document.getElementById('serviceCount').textContent = servicesData.services?.length || 0;
+                    }
+                } catch (e) { console.error('Error loading services count:', e); }
+
+                // Load projects count
+                try {
+                    const projectsRes = await fetch(`${API_URL}/projects/admin/all`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const projectsData = await projectsRes.json();
+                    if (projectsData.success) {
+                        document.getElementById('projectCount').textContent = projectsData.projects?.length || 0;
+                    }
+                } catch (e) { console.error('Error loading projects count:', e); }
+
+                // Load systems count
+                try {
+                    const systemsRes = await fetch(`${API_URL}/systems`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const systemsData = await systemsRes.json();
+                    if (systemsData.success) {
+                        document.getElementById('systemCount').textContent = systemsData.systems?.length || 0;
+                    }
+                } catch (e) { console.error('Error loading systems count:', e); }
+
+                // Load enrollments count
+                try {
+                    const enrollmentsRes = await fetch(`${API_URL}/enrollments`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const enrollmentsData = await enrollmentsRes.json();
+                    if (enrollmentsData.success) {
+                        document.getElementById('enrollmentCount').textContent = enrollmentsData.enrollments?.length || 0;
+                    }
+                } catch (e) { console.error('Error loading enrollments count:', e); }
+
+                // Load invoices count
+                try {
+                    const invoicesRes = await fetch(`${API_URL}/invoices`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const invoicesData = await invoicesRes.json();
+                    if (invoicesData.success) {
+                        document.getElementById('invoiceCount').textContent = invoicesData.invoices?.length || 0;
+                    }
+                } catch (e) { console.error('Error loading invoices count:', e); }
+
+                // Load consultations count
+                try {
+                    const consultationsRes = await fetch(`${API_URL}/consultations`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const consultationsData = await consultationsRes.json();
+                    if (consultationsData.success) {
+                        document.getElementById('consultationCount').textContent = consultationsData.consultations?.length || 0;
+                    }
+                } catch (e) { console.error('Error loading consultations count:', e); }
+
+            } catch (error) {
+                console.error('Error loading navbar counts:', error);
+            }
+        }
+
+        // Load all consultations
+        async function loadConsultations() {
+            showLoading();
+            
+            try {
+                const token = localStorage.getItem('token');
+                
+                if (!token) {
+                    throw new Error('No authentication token found');
+                }
+                
+                console.log('Fetching consultations from database...');
+                
+                const response = await fetch(`${API_URL}/consultations`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        window.location.href = 'index.html';
+                        return;
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Consultations data received:', data);
+                
+                if (data.success) {
+                    allConsultations = data.consultations || [];
+                    filteredConsultations = [...allConsultations];
+                    updateStats();
+                    displayConsultations();
+                    updateLastUpdated();
+                    
+                    // Update consultation count in navbar
+                    document.getElementById('consultationCount').textContent = allConsultations.length;
+                    
+                    showNotification(`Loaded ${allConsultations.length} consultations`, 'success');
+                } else {
+                    throw new Error(data.message || 'Failed to load consultations');
+                }
+            } catch (error) {
+                console.error('Error loading consultations:', error);
+                showNotification('Failed to load consultations. Using sample data.', 'warning');
+                loadSampleConsultations();
+            }
+            
+            hideLoading();
+        }
+
+        // Load sample consultations
+        function loadSampleConsultations() {
+            allConsultations = [
+                {
+                    _id: '1',
+                    clientId: 'client1',
+                    clientName: 'Tech Corp',
+                    clientEmail: 'contact@techcorp.com',
+                    clientAvatar: 'https://randomuser.me/api/portraits/men/1.jpg',
+                    consultantId: 'consultant1',
+                    consultantName: 'John Instructor',
+                    consultantAvatar: 'https://randomuser.me/api/portraits/men/2.jpg',
+                    date: new Date('2024-03-20'),
+                    startTime: '10:00',
+                    endTime: '11:00',
+                    duration: '60 minutes',
+                    type: 'Technical',
+                    mode: 'Online',
+                    meetingLink: 'https://meet.google.com/abc-defg-hij',
+                    location: '',
+                    topic: 'Cloud Migration Strategy',
+                    relatedProject: 'proj1',
+                    status: 'Confirmed',
+                    agenda: 'Discuss cloud migration strategy for their e-commerce platform',
+                    requirements: 'Need to migrate from on-premise to AWS',
+                    preNotes: 'Prepare case studies of similar migrations',
+                    expectedOutcome: 'Project proposal and timeline',
+                    priority: 'High',
+                    notes: [
+                        {
+                            id: 'note1',
+                            author: 'John Instructor',
+                            date: new Date('2024-03-18'),
+                            content: 'Client mentioned they have tight deadline',
+                            isPrivate: false
+                        }
+                    ],
+                    outcome: '',
+                    actionItems: '',
+                    nextSteps: '',
+                    followUpDate: null,
+                    feedbackRating: null,
+                    createdAt: new Date('2024-03-15')
+                },
+                {
+                    _id: '2',
+                    clientId: 'client2',
+                    clientName: 'Green Building Inc',
+                    clientEmail: 'info@greenbuilding.com',
+                    clientAvatar: 'https://randomuser.me/api/portraits/women/1.jpg',
+                    consultantId: 'consultant2',
+                    consultantName: 'Dr. Sarah Johnson',
+                    consultantAvatar: 'https://randomuser.me/api/portraits/women/2.jpg',
+                    date: new Date('2024-03-21'),
+                    startTime: '14:00',
+                    endTime: '15:30',
+                    duration: '90 minutes',
+                    type: 'Strategy',
+                    mode: 'In-person',
+                    meetingLink: '',
+                    location: 'Main Office - Conference Room B',
+                    topic: 'IoT Building Management System',
+                    relatedProject: 'proj2',
+                    status: 'Scheduled',
+                    agenda: 'Discuss IoT implementation for building management',
+                    requirements: 'Need energy efficiency solutions',
+                    preNotes: 'Review building plans and current systems',
+                    expectedOutcome: 'Implementation plan',
+                    priority: 'Normal',
+                    notes: [],
+                    outcome: '',
+                    actionItems: '',
+                    nextSteps: '',
+                    followUpDate: null,
+                    feedbackRating: null,
+                    createdAt: new Date('2024-03-16')
+                },
+                {
+                    _id: '3',
+                    clientId: 'client3',
+                    clientName: 'EduTech Solutions',
+                    clientEmail: 'billing@edutech.com',
+                    clientAvatar: 'https://randomuser.me/api/portraits/men/3.jpg',
+                    consultantId: 'consultant3',
+                    consultantName: 'Mike Chen',
+                    consultantAvatar: 'https://randomuser.me/api/portraits/men/4.jpg',
+                    date: new Date('2024-03-19'),
+                    startTime: '09:00',
+                    endTime: '10:00',
+                    duration: '60 minutes',
+                    type: 'Business',
+                    mode: 'Phone',
+                    meetingLink: '',
+                    location: '',
+                    topic: 'Subscription Model Discussion',
+                    relatedProject: '',
+                    status: 'Completed',
+                    agenda: 'Discuss pricing and subscription models for their platform',
+                    requirements: 'Need to understand different pricing strategies',
+                    preNotes: 'Prepare comparison of competitors',
+                    expectedOutcome: 'Pricing recommendations',
+                    priority: 'Normal',
+                    notes: [
+                        {
+                            id: 'note2',
+                            author: 'Mike Chen',
+                            date: new Date('2024-03-19'),
+                            content: 'Client interested in tiered pricing model',
+                            isPrivate: false
+                        }
+                    ],
+                    outcome: 'Recommended freemium model with premium features',
+                    actionItems: 'Prepare detailed pricing proposal',
+                    nextSteps: 'Send proposal by end of week',
+                    followUpDate: new Date('2024-03-26'),
+                    feedbackRating: 5,
+                    createdAt: new Date('2024-03-10')
+                }
+            ];
+            
+            filteredConsultations = [...allConsultations];
+            updateStats();
+            displayConsultations();
+            document.getElementById('consultationCount').textContent = allConsultations.length;
+        }
+
+        // Update statistics
+        function updateStats() {
+            const totalConsultations = allConsultations.length;
+            const scheduledCount = allConsultations.filter(c => c.status === 'Scheduled' || c.status === 'Confirmed').length;
+            const completedCount = allConsultations.filter(c => c.status === 'Completed').length;
+            const cancelledCount = allConsultations.filter(c => c.status === 'Cancelled' || c.status === 'No-show').length;
+
+            document.getElementById('totalConsultations').textContent = totalConsultations;
+            document.getElementById('scheduledCount').textContent = scheduledCount;
+            document.getElementById('completedCount').textContent = completedCount;
+            document.getElementById('cancelledCount').textContent = cancelledCount;
+        }
+
+        // Get status CSS class
+        function getStatusClass(status) {
+            switch(status) {
+                case 'Scheduled': return 'status-scheduled';
+                case 'Confirmed': return 'status-confirmed';
+                case 'Completed': return 'status-completed';
+                case 'Cancelled': return 'status-cancelled';
+                case 'No-show': return 'status-no-show';
+                case 'Rescheduled': return 'status-rescheduled';
+                default: return 'status-scheduled';
+            }
+        }
+
+        // Get type CSS class
+        function getTypeClass(type) {
+            switch(type) {
+                case 'Technical': return 'type-technical';
+                case 'Business': return 'type-business';
+                case 'Strategy': return 'type-strategy';
+                case 'Support': return 'type-support';
+                default: return 'type-technical';
+            }
+        }
+
+        // Get mode CSS class
+        function getModeClass(mode) {
+            switch(mode) {
+                case 'Online': return 'mode-online';
+                case 'In-person': return 'mode-inperson';
+                case 'Phone': return 'mode-phone';
+                default: return 'mode-online';
+            }
+        }
+
+        // Calculate duration from start and end times
+        function calculateDuration() {
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            
+            if (startTime && endTime) {
+                const start = new Date(`2000-01-01T${startTime}`);
+                const end = new Date(`2000-01-01T${endTime}`);
+                const diffMs = end - start;
+                const diffMins = Math.round(diffMs / 60000);
+                
+                if (diffMins > 0) {
+                    const hours = Math.floor(diffMins / 60);
+                    const mins = diffMins % 60;
+                    let durationText = '';
+                    if (hours > 0) durationText += `${hours} hour${hours > 1 ? 's' : ''} `;
+                    if (mins > 0) durationText += `${mins} minute${mins > 1 ? 's' : ''}`;
+                    document.getElementById('duration').value = durationText.trim();
+                } else {
+                    document.getElementById('duration').value = 'Invalid time range';
+                }
+            }
+        }
+
+        // Display consultations with pagination
+        function displayConsultations() {
+            const tbody = document.getElementById('consultationsTableBody');
+            
+            if (!filteredConsultations || filteredConsultations.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="empty-state">
+                            <i class="fas fa-calendar-check"></i>
+                            <p>No consultations found</p>
+                            <button class="btn-primary" onclick="openAddConsultationModal()">Schedule Your First Consultation</button>
+                        </td>
+                    </tr>
+                `;
+                updatePagination();
+                return;
+            }
+
+            // Calculate pagination
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const paginatedConsultations = filteredConsultations.slice(start, end);
+
+            tbody.innerHTML = paginatedConsultations.map(consultation => {
+                const statusClass = getStatusClass(consultation.status);
+                const typeClass = getTypeClass(consultation.type);
+                const modeClass = getModeClass(consultation.mode);
+                const date = new Date(consultation.date);
+                const today = new Date();
+                const isToday = date.toDateString() === today.toDateString();
+                const isUpcoming = date > today && consultation.status !== 'Completed' && consultation.status !== 'Cancelled';
+                
+                return `
+                <tr>
+                    <td class="checkbox-col">
+                        <input type="checkbox" class="consultation-checkbox" value="${consultation._id}" 
+                               ${selectedConsultations.has(consultation._id) ? 'checked' : ''} 
+                               onchange="toggleConsultationSelect('${consultation._id}', this.checked)">
+                    </td>
+                    <td>
+                        <div class="client-info">
+                            <img src="${consultation.clientAvatar || 'https://randomuser.me/api/portraits/lego/1.jpg'}" 
+                                 class="client-avatar" 
+                                 onerror="this.src='https://randomuser.me/api/portraits/lego/1.jpg'">
+                            <div>
+                                <div>${consultation.clientName}</div>
+                                <small style="color: var(--gray-500);">${consultation.clientEmail}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="consultant-info">
+                            <img src="${consultation.consultantAvatar || 'https://randomuser.me/api/portraits/lego/2.jpg'}" 
+                                 class="consultant-avatar"
+                                 onerror="this.src='https://randomuser.me/api/portraits/lego/2.jpg'">
+                            <span>${consultation.consultantName}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="datetime-info">
+                            <div>${date.toLocaleDateString()}</div>
+                            <small>${consultation.startTime} - ${consultation.endTime}</small>
+                            ${isToday ? '<br><span style="color: #16a34a; font-weight: 600;">Today</span>' : ''}
+                            ${isUpcoming ? '<br><span style="color: #2563eb; font-weight: 600;">Upcoming</span>' : ''}
+                        </div>
+                    </td>
+                    <td>${consultation.duration}</td>
+                    <td><span class="type-badge ${typeClass}">${consultation.type}</span></td>
+                    <td><span class="mode-badge ${modeClass}">${consultation.mode}</span></td>
+                    <td>${consultation.topic}</td>
+                    <td><span class="status-badge ${statusClass}">${consultation.status}</span></td>
+                    <td>
+                        <button class="action-btn-icon view" onclick="viewConsultation('${consultation._id}')" title="View">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="action-btn-icon edit" onclick="editConsultation('${consultation._id}')" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        ${consultation.status === 'Scheduled' ? `
+                            <button class="action-btn-icon complete" onclick="updateConsultationStatus('${consultation._id}', 'Confirmed')" title="Confirm">
+                                <i class="fas fa-check-circle"></i>
+                            </button>
+                        ` : ''}
+                        ${consultation.status !== 'Completed' && consultation.status !== 'Cancelled' ? `
+                            <button class="action-btn-icon remind" onclick="sendReminder('${consultation._id}')" title="Send Reminder">
+                                <i class="fas fa-bell"></i>
+                            </button>
+                        ` : ''}
+                        ${consultation.status === 'Completed' ? `
+                            <button class="action-btn-icon notes" onclick="viewNotes('${consultation._id}')" title="View Notes">
+                                <i class="fas fa-sticky-note"></i>
+                            </button>
+                        ` : ''}
+                        <button class="action-btn-icon delete" onclick="deleteConsultation('${consultation._id}')" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `}).join('');
+
+            updatePagination();
+            updateSelectAllCheckbox();
+        }
+
+        // Filter consultations
+        function filterConsultations() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+            const consultantFilter = document.getElementById('consultantFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+
+            filteredConsultations = allConsultations.filter(consultation => {
+                // Search filter
+                const matchesSearch = !searchTerm || 
+                    (consultation.clientName && consultation.clientName.toLowerCase().includes(searchTerm)) ||
+                    (consultation.consultantName && consultation.consultantName.toLowerCase().includes(searchTerm)) ||
+                    (consultation.topic && consultation.topic.toLowerCase().includes(searchTerm));
+
+                // Status filter
+                const matchesStatus = !statusFilter || consultation.status === statusFilter;
+
+                // Type filter
+                const matchesType = !typeFilter || consultation.type === typeFilter;
+
+                // Consultant filter
+                const matchesConsultant = !consultantFilter || 
+                    (consultation.consultantId === consultantFilter) ||
+                    (consultation.consultantName && consultation.consultantName.toLowerCase().includes(consultantFilter));
+
+                // Date filter
+                let matchesDate = true;
+                if (dateFilter && consultation.date) {
+                    const date = new Date(consultation.date);
+                    const today = new Date();
+                    const tomorrow = new Date(today);
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    
+                    const weekStart = new Date(today);
+                    weekStart.setDate(today.getDate() - today.getDay());
+                    const weekEnd = new Date(weekStart);
+                    weekEnd.setDate(weekEnd.getDate() + 6);
+                    
+                    const nextWeekStart = new Date(today);
+                    nextWeekStart.setDate(today.getDate() + (7 - today.getDay()));
+                    const nextWeekEnd = new Date(nextWeekStart);
+                    nextWeekEnd.setDate(nextWeekEnd.getDate() + 6);
+                    
+                    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+                    const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    
+                    switch(dateFilter) {
+                        case 'today':
+                            matchesDate = date.toDateString() === today.toDateString();
+                            break;
+                        case 'tomorrow':
+                            matchesDate = date.toDateString() === tomorrow.toDateString();
+                            break;
+                        case 'week':
+                            matchesDate = date >= weekStart && date <= weekEnd;
+                            break;
+                        case 'next-week':
+                            matchesDate = date >= nextWeekStart && date <= nextWeekEnd;
+                            break;
+                        case 'month':
+                            matchesDate = date >= monthStart && date <= monthEnd;
+                            break;
+                    }
+                }
+
+                return matchesSearch && matchesStatus && matchesType && matchesConsultant && matchesDate;
+            });
+
+            currentPage = 1;
+            displayConsultations();
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('typeFilter').value = '';
+            document.getElementById('consultantFilter').value = '';
+            document.getElementById('dateFilter').value = '';
+            filteredConsultations = [...allConsultations];
+            currentPage = 1;
+            displayConsultations();
+            showNotification('Filters cleared', 'info');
+        }
+
+        // Update pagination
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredConsultations.length / itemsPerPage);
+            document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages || 1}`;
+            
+            document.getElementById('prevPage').disabled = currentPage === 1;
+            document.getElementById('nextPage').disabled = currentPage === totalPages || totalPages === 0;
+        }
+
+        // Change page
+        function changePage(direction) {
+            if (direction === 'prev' && currentPage > 1) {
+                currentPage--;
+            } else if (direction === 'next') {
+                const totalPages = Math.ceil(filteredConsultations.length / itemsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                }
+            }
+            displayConsultations();
+        }
+
+        // Toggle select all
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll').checked;
+            const checkboxes = document.querySelectorAll('.consultation-checkbox');
+            
+            checkboxes.forEach(cb => {
+                cb.checked = selectAll;
+                if (selectAll) {
+                    selectedConsultations.add(cb.value);
+                } else {
+                    selectedConsultations.delete(cb.value);
+                }
+            });
+            
+            updateBulkActions();
+        }
+
+        // Toggle consultation select
+        function toggleConsultationSelect(consultationId, checked) {
+            if (checked) {
+                selectedConsultations.add(consultationId);
+            } else {
+                selectedConsultations.delete(consultationId);
+            }
+            updateBulkActions();
+            updateSelectAllCheckbox();
+        }
+
+        // Update select all checkbox
+        function updateSelectAllCheckbox() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.consultation-checkbox');
+            const checkedCount = document.querySelectorAll('.consultation-checkbox:checked').length;
+            
+            if (checkboxes.length > 0) {
+                selectAll.checked = checkedCount === checkboxes.length;
+                selectAll.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
+            } else {
+                selectAll.checked = false;
+                selectAll.indeterminate = false;
+            }
+        }
+
+        // Update bulk actions visibility
+        function updateBulkActions() {
+            const bulkActions = document.getElementById('bulkActions');
+            const selectedCount = document.getElementById('selectedCount');
+            
+            selectedCount.textContent = selectedConsultations.size;
+            
+            if (selectedConsultations.size > 0) {
+                bulkActions.classList.add('show');
+            } else {
+                bulkActions.classList.remove('show');
+            }
+        }
+
+        // Clear selection
+        function clearSelection() {
+            selectedConsultations.clear();
+            document.querySelectorAll('.consultation-checkbox').forEach(cb => {
+                cb.checked = false;
+            });
+            document.getElementById('selectAll').checked = false;
+            updateBulkActions();
+            showNotification('Selection cleared', 'info');
+        }
+
+        // Apply bulk action
+        async function applyBulkAction() {
+            const action = document.getElementById('bulkActionSelect').value;
+            
+            if (!action) {
+                showNotification('Please select an action', 'warning');
+                return;
+            }
+
+            if (selectedConsultations.size === 0) {
+                showNotification('No consultations selected', 'warning');
+                return;
+            }
+
+            if (action === 'delete') {
+                if (!confirm(`Are you sure you want to delete ${selectedConsultations.size} consultations?`)) {
+                    return;
+                }
+            }
+
+            showNotification(`Processing ${action} for ${selectedConsultations.size} consultations...`, 'info');
+
+            // Update consultations based on action
+            selectedConsultations.forEach(consultationId => {
+                const consultation = allConsultations.find(c => c._id === consultationId);
+                if (consultation) {
+                    switch(action) {
+                        case 'confirm':
+                            consultation.status = 'Confirmed';
+                            break;
+                        case 'complete':
+                            consultation.status = 'Completed';
+                            break;
+                        case 'cancel':
+                            consultation.status = 'Cancelled';
+                            break;
+                        case 'delete':
+                            // Handle delete
+                            break;
+                    }
+                }
+            });
+
+            if (action === 'delete') {
+                allConsultations = allConsultations.filter(c => !selectedConsultations.has(c._id));
+            }
+
+            setTimeout(() => {
+                filteredConsultations = [...allConsultations];
+                updateStats();
+                displayConsultations();
+                clearSelection();
+                showNotification(`Successfully applied ${action} to ${selectedConsultations.size} consultations`, 'success');
+            }, 1000);
+        }
+
+        // Export consultations
+        function exportConsultations(format) {
+            if (filteredConsultations.length === 0) {
+                showNotification('No consultations to export', 'warning');
+                return;
+            }
+
+            const data = filteredConsultations.map(c => ({
+                'Client': c.clientName,
+                'Consultant': c.consultantName,
+                'Date': new Date(c.date).toLocaleDateString(),
+                'Start Time': c.startTime,
+                'End Time': c.endTime,
+                'Duration': c.duration,
+                'Type': c.type,
+                'Mode': c.mode,
+                'Topic': c.topic,
+                'Status': c.status,
+                'Priority': c.priority || 'Normal'
+            }));
+
+            let content, filename, type;
+            
+            switch(format) {
+                case 'csv':
+                    content = convertToCSV(data);
+                    filename = `consultations_${new Date().toISOString().split('T')[0]}.csv`;
+                    type = 'text/csv';
+                    break;
+                case 'excel':
+                    content = convertToCSV(data);
+                    filename = `consultations_${new Date().toISOString().split('T')[0]}.xls`;
+                    type = 'application/vnd.ms-excel';
+                    break;
+                case 'pdf':
+                    showNotification('PDF export coming soon', 'info');
+                    return;
+                default:
+                    return;
+            }
+
+            const blob = new Blob([content], { type });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            showNotification(`${filteredConsultations.length} consultations exported as ${format.toUpperCase()}`, 'success');
+        }
+
+        // Convert to CSV
+        function convertToCSV(data) {
+            if (data.length === 0) return '';
+            const headers = Object.keys(data[0]);
+            const rows = data.map(obj => headers.map(header => JSON.stringify(obj[header] || '').replace(/,/g, ' ')).join(','));
+            return [headers.join(','), ...rows].join('\n');
+        }
+
+        // Switch tab
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.form-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Add consultation note
+        function addConsultationNote() {
+            document.getElementById('noteModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Save note
+        function saveNote(event) {
+            event.preventDefault();
+            
+            const noteContent = document.getElementById('noteContent').value;
+            const isPrivate = document.getElementById('notePrivate').checked;
+            
+            if (noteContent) {
+                const notesContainer = document.getElementById('notesContainer');
+                const noteDiv = document.createElement('div');
+                noteDiv.className = 'note-item';
+                noteDiv.innerHTML = `
+                    <div class="note-header">
+                        <span class="note-author">Admin</span>
+                        <span class="note-date">${new Date().toLocaleString()}</span>
+                        ${isPrivate ? '<span style="color: #d97706;">🔒 Private</span>' : ''}
+                    </div>
+                    <div class="note-content">${noteContent}</div>
+                `;
+                notesContainer.appendChild(noteDiv);
+                
+                closeNoteModal();
+                showNotification('Note added successfully', 'success');
+            }
+        }
+
+        // Close note modal
+        function closeNoteModal() {
+            document.getElementById('noteModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            document.getElementById('noteForm').reset();
+        }
+
+        // Open add consultation modal
+        function openAddConsultationModal() {
+            document.getElementById('modalTitle').textContent = 'Schedule New Consultation';
+            document.getElementById('consultationForm').reset();
+            document.getElementById('consultationId').value = '';
+            document.getElementById('consultationStatus').value = 'Scheduled';
+            document.getElementById('sendReminder').checked = true;
+            
+            // Clear notes container
+            document.getElementById('notesContainer').innerHTML = '';
+            
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('consultationDate').value = today;
+            
+            // Set default times
+            document.getElementById('startTime').value = '10:00';
+            document.getElementById('endTime').value = '11:00';
+            calculateDuration();
+            
+            const modal = document.getElementById('consultationModal');
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Edit consultation
+        async function editConsultation(consultationId) {
+            const consultation = allConsultations.find(c => c._id === consultationId);
+            
+            if (consultation) {
+                document.getElementById('modalTitle').textContent = 'Edit Consultation';
+                document.getElementById('consultationId').value = consultation._id;
+                document.getElementById('clientId').value = consultation.clientId || '';
+                document.getElementById('consultantId').value = consultation.consultantId || '';
+                
+                if (consultation.date) {
+                    document.getElementById('consultationDate').value = new Date(consultation.date).toISOString().split('T')[0];
+                }
+                document.getElementById('startTime').value = consultation.startTime || '';
+                document.getElementById('endTime').value = consultation.endTime || '';
+                calculateDuration();
+                
+                document.getElementById('consultationType').value = consultation.type || '';
+                document.getElementById('consultationMode').value = consultation.mode || '';
+                document.getElementById('meetingLink').value = consultation.meetingLink || '';
+                document.getElementById('location').value = consultation.location || '';
+                document.getElementById('topic').value = consultation.topic || '';
+                document.getElementById('relatedProject').value = consultation.relatedProject || '';
+                document.getElementById('consultationStatus').value = consultation.status || 'Scheduled';
+                document.getElementById('agenda').value = consultation.agenda || '';
+                document.getElementById('requirements').value = consultation.requirements || '';
+                document.getElementById('preNotes').value = consultation.preNotes || '';
+                document.getElementById('expectedOutcome').value = consultation.expectedOutcome || '';
+                document.getElementById('priority').value = consultation.priority || 'Normal';
+                document.getElementById('outcome').value = consultation.outcome || '';
+                document.getElementById('actionItems').value = consultation.actionItems || '';
+                document.getElementById('nextSteps').value = consultation.nextSteps || '';
+                
+                if (consultation.followUpDate) {
+                    document.getElementById('followUpDate').value = new Date(consultation.followUpDate).toISOString().split('T')[0];
+                }
+                document.getElementById('feedbackRating').value = consultation.feedbackRating || '';
+                
+                // Load notes
+                const notesContainer = document.getElementById('notesContainer');
+                notesContainer.innerHTML = '';
+                if (consultation.notes && consultation.notes.length > 0) {
+                    consultation.notes.forEach(note => {
+                        const noteDiv = document.createElement('div');
+                        noteDiv.className = 'note-item';
+                        noteDiv.innerHTML = `
+                            <div class="note-header">
+                                <span class="note-author">${note.author}</span>
+                                <span class="note-date">${new Date(note.date).toLocaleString()}</span>
+                                ${note.isPrivate ? '<span style="color: #d97706;">🔒 Private</span>' : ''}
+                            </div>
+                            <div class="note-content">${note.content}</div>
+                        `;
+                        notesContainer.appendChild(noteDiv);
+                    });
+                }
+                
+                const modal = document.getElementById('consultationModal');
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        // View consultation
+        async function viewConsultation(consultationId) {
+            const consultation = allConsultations.find(c => c._id === consultationId);
+            currentViewConsultationId = consultationId;
+            
+            if (consultation) {
+                const details = document.getElementById('consultationDetails');
+                const statusClass = getStatusClass(consultation.status);
+                const typeClass = getTypeClass(consultation.type);
+                const modeClass = getModeClass(consultation.mode);
+                const date = new Date(consultation.date);
+                
+                let notesHtml = '';
+                if (consultation.notes && consultation.notes.length > 0) {
+                    notesHtml = consultation.notes.map(note => `
+                        <div class="note-item">
+                            <div class="note-header">
+                                <span class="note-author">${note.author}</span>
+                                <span class="note-date">${new Date(note.date).toLocaleString()}</span>
+                                ${note.isPrivate ? '<span style="color: #d97706;">🔒 Private</span>' : ''}
+                            </div>
+                            <div class="note-content">${note.content}</div>
+                        </div>
+                    `).join('');
+                }
+                
+                details.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                        <div>
+                            <h3 style="margin-bottom: 10px;">${consultation.topic}</h3>
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <span class="status-badge ${statusClass}">${consultation.status}</span>
+                                <span class="type-badge ${typeClass}">${consultation.type}</span>
+                                <span class="mode-badge ${modeClass}">${consultation.mode}</span>
+                                ${consultation.priority === 'High' ? '<span style="background: #fee2e2; color: #dc2626; padding: 4px 12px; border-radius: 20px;">High Priority</span>' : ''}
+                                ${consultation.priority === 'Urgent' ? '<span style="background: #dc2626; color: white; padding: 4px 12px; border-radius: 20px;">Urgent</span>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div>
+                            <h4>Client Information</h4>
+                            <div style="background: var(--gray-50); padding: 15px; border-radius: 8px;">
+                                <p><strong>Name:</strong> ${consultation.clientName}</p>
+                                <p><strong>Email:</strong> ${consultation.clientEmail}</p>
+                            </div>
+                        </div>
+                        <div>
+                            <h4>Consultant</h4>
+                            <div style="background: var(--gray-50); padding: 15px; border-radius: 8px;">
+                                <p><strong>Name:</strong> ${consultation.consultantName}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div>
+                            <h4>Date & Time</h4>
+                            <div style="background: var(--gray-50); padding: 15px; border-radius: 8px;">
+                                <p><strong>Date:</strong> ${date.toLocaleDateString()}</p>
+                                <p><strong>Time:</strong> ${consultation.startTime} - ${consultation.endTime}</p>
+                                <p><strong>Duration:</strong> ${consultation.duration}</p>
+                            </div>
+                        </div>
+                        <div>
+                            <h4>Location</h4>
+                            <div style="background: var(--gray-50); padding: 15px; border-radius: 8px;">
+                                ${consultation.mode === 'Online' ? `
+                                    <p><strong>Meeting Link:</strong> <a href="${consultation.meetingLink}" target="_blank">${consultation.meetingLink}</a></p>
+                                ` : ''}
+                                ${consultation.mode === 'In-person' ? `
+                                    <p><strong>Location:</strong> ${consultation.location || 'Not specified'}</p>
+                                ` : ''}
+                                ${consultation.mode === 'Phone' ? `
+                                    <p><strong>Phone consultation</strong></p>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${consultation.agenda ? `
+                    <div style="margin-bottom: 20px;">
+                        <h4>Agenda</h4>
+                        <p style="background: var(--gray-50); padding: 15px; border-radius: 8px;">${consultation.agenda}</p>
+                    </div>
+                    ` : ''}
+                    
+                    ${consultation.requirements ? `
+                    <div style="margin-bottom: 20px;">
+                        <h4>Client Requirements</h4>
+                        <p style="background: var(--gray-50); padding: 15px; border-radius: 8px;">${consultation.requirements}</p>
+                    </div>
+                    ` : ''}
+                    
+                    ${consultation.preNotes ? `
+                    <div style="margin-bottom: 20px;">
+                        <h4>Pre-consultation Notes</h4>
+                        <p style="background: var(--gray-50); padding: 15px; border-radius: 8px;">${consultation.preNotes}</p>
+                    </div>
+                    ` : ''}
+                    
+                    ${consultation.expectedOutcome ? `
+                    <div style="margin-bottom: 20px;">
+                        <h4>Expected Outcome</h4>
+                        <p style="background: var(--gray-50); padding: 15px; border-radius: 8px;">${consultation.expectedOutcome}</p>
+                    </div>
+                    ` : ''}
+                    
+                    ${notesHtml ? `
+                    <div style="margin-bottom: 20px;">
+                        <h4>Notes</h4>
+                        <div style="background: var(--gray-50); padding: 15px; border-radius: 8px;">
+                            ${notesHtml}
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${consultation.outcome ? `
+                    <div style="margin-bottom: 20px;">
+                        <h4>Outcome</h4>
+                        <p style="background: var(--gray-50); padding: 15px; border-radius: 8px;">${consultation.outcome}</p>
+                    </div>
+                    ` : ''}
+                    
+                    ${consultation.actionItems ? `
+                    <div style="margin-bottom: 20px;">
+                        <h4>Action Items</h4>
+                        <p style="background: var(--gray-50); padding: 15px; border-radius: 8px;">${consultation.actionItems}</p>
+                    </div>
+                    ` : ''}
+                    
+                    ${consultation.nextSteps ? `
+                    <div style="margin-bottom: 20px;">
+                        <h4>Next Steps</h4>
+                        <p style="background: var(--gray-50); padding: 15px; border-radius: 8px;">${consultation.nextSteps}</p>
+                    </div>
+                    ` : ''}
+                    
+                    ${consultation.followUpDate ? `
+                    <div style="margin-bottom: 20px;">
+                        <h4>Follow-up Date</h4>
+                        <p style="background: var(--gray-50); padding: 15px; border-radius: 8px;">${new Date(consultation.followUpDate).toLocaleDateString()}</p>
+                    </div>
+                    ` : ''}
+                    
+                    ${consultation.feedbackRating ? `
+                    <div style="margin-bottom: 20px;">
+                        <h4>Feedback Rating</h4>
+                        <p style="background: var(--gray-50); padding: 15px; border-radius: 8px;">
+                            ${'★'.repeat(consultation.feedbackRating)}${'☆'.repeat(5-consultation.feedbackRating)}
+                        </p>
+                    </div>
+                    ` : ''}
+                `;
+                
+                document.getElementById('viewConsultationModal').style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        // Edit from view modal
+        function editFromView() {
+            closeViewModal();
+            if (currentViewConsultationId) {
+                editConsultation(currentViewConsultationId);
+            }
+        }
+
+        // Send reminder
+        function sendReminder(consultationId) {
+            if (consultationId) {
+                currentViewConsultationId = consultationId;
+            }
+            showNotification('Reminder sent successfully!', 'success');
+        }
+
+        // Download consultation summary
+        function downloadConsultation() {
+            showNotification('Downloading consultation summary...', 'info');
+            setTimeout(() => {
+                showNotification('Summary downloaded!', 'success');
+            }, 1500);
+        }
+
+        // View notes
+        function viewNotes(consultationId) {
+            const consultation = allConsultations.find(c => c._id === consultationId);
+            if (consultation) {
+                let notesText = 'Consultation Notes:\n\n';
+                if (consultation.notes && consultation.notes.length > 0) {
+                    consultation.notes.forEach(note => {
+                        notesText += `${note.author} (${new Date(note.date).toLocaleString()}):\n`;
+                        notesText += `${note.content}\n\n`;
+                    });
+                } else {
+                    notesText += 'No notes available.';
+                }
+                alert(notesText);
+            }
+        }
+
+        // Update consultation status
+        function updateConsultationStatus(consultationId, newStatus) {
+            const consultation = allConsultations.find(c => c._id === consultationId);
+            if (consultation) {
+                consultation.status = newStatus;
+                updateStats();
+                displayConsultations();
+                showNotification(`Consultation marked as ${newStatus}`, 'success');
+            }
+        }
+
+        // Save consultation
+        async function saveConsultation(event) {
+            event.preventDefault();
+            
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.classList.add('loading');
+            saveBtn.disabled = true;
+            
+            const consultationId = document.getElementById('consultationId').value;
+            const isEdit = !!consultationId;
+            
+            // Collect notes
+            const notes = [];
+            document.querySelectorAll('#notesContainer .note-item').forEach(noteItem => {
+                const author = noteItem.querySelector('.note-author')?.textContent || 'Admin';
+                const dateText = noteItem.querySelector('.note-date')?.textContent;
+                const content = noteItem.querySelector('.note-content')?.textContent;
+                const isPrivate = noteItem.querySelector('.note-header span:last-child')?.textContent.includes('Private');
+                
+                if (content) {
+                    notes.push({
+                        author,
+                        date: dateText ? new Date(dateText) : new Date(),
+                        content,
+                        isPrivate: !!isPrivate
+                    });
+                }
+            });
+            
+            const consultationData = {
+                clientId: document.getElementById('clientId').value,
+                clientName: document.getElementById('clientId').selectedOptions[0]?.text || '',
+                consultantId: document.getElementById('consultantId').value,
+                consultantName: document.getElementById('consultantId').selectedOptions[0]?.text || '',
+                date: new Date(document.getElementById('consultationDate').value),
+                startTime: document.getElementById('startTime').value,
+                endTime: document.getElementById('endTime').value,
+                duration: document.getElementById('duration').value,
+                type: document.getElementById('consultationType').value,
+                mode: document.getElementById('consultationMode').value,
+                meetingLink: document.getElementById('meetingLink').value,
+                location: document.getElementById('location').value,
+                topic: document.getElementById('topic').value,
+                relatedProject: document.getElementById('relatedProject').value || null,
+                status: document.getElementById('consultationStatus').value,
+                agenda: document.getElementById('agenda').value,
+                requirements: document.getElementById('requirements').value,
+                preNotes: document.getElementById('preNotes').value,
+                expectedOutcome: document.getElementById('expectedOutcome').value,
+                priority: document.getElementById('priority').value,
+                notes: notes,
+                outcome: document.getElementById('outcome').value,
+                actionItems: document.getElementById('actionItems').value,
+                nextSteps: document.getElementById('nextSteps').value,
+                followUpDate: document.getElementById('followUpDate').value ? new Date(document.getElementById('followUpDate').value) : null,
+                feedbackRating: document.getElementById('feedbackRating').value ? parseInt(document.getElementById('feedbackRating').value) : null
+            };
+
+            // Validate required fields
+            if (!consultationData.clientId || !consultationData.consultantId || !consultationData.type || !consultationData.mode || !consultationData.topic) {
+                showNotification('Please fill in all required fields', 'error');
+                saveBtn.classList.remove('loading');
+                saveBtn.disabled = false;
+                return;
+            }
+
+            showNotification(`${isEdit ? 'Updating' : 'Scheduling'} consultation...`, 'info');
+
+            // Simulate API call
+            setTimeout(() => {
+                if (isEdit) {
+                    // Update existing consultation
+                    const index = allConsultations.findIndex(c => c._id === consultationId);
+                    if (index !== -1) {
+                        allConsultations[index] = { ...allConsultations[index], ...consultationData };
+                    }
+                    showNotification('Consultation updated successfully', 'success');
+                } else {
+                    // Add new consultation
+                    const newConsultation = {
+                        _id: Date.now().toString(),
+                        ...consultationData,
+                        createdAt: new Date()
+                    };
+                    allConsultations.push(newConsultation);
+                    showNotification('Consultation scheduled successfully', 'success');
+                    
+                    // Send reminder if checked
+                    if (document.getElementById('sendReminder').checked) {
+                        setTimeout(() => {
+                            showNotification('Reminder email sent to client and consultant', 'info');
+                        }, 500);
+                    }
+                }
+                
+                filteredConsultations = [...allConsultations];
+                updateStats();
+                displayConsultations();
+                closeModal();
+                
+                saveBtn.classList.remove('loading');
+                saveBtn.disabled = false;
+            }, 1000);
+        }
+
+        // Delete consultation
+        function deleteConsultation(consultationId) {
+            deleteConsultationId = consultationId;
+            document.getElementById('deleteMessage').textContent = 'Are you sure you want to delete this consultation? This action cannot be undone.';
+            document.getElementById('deleteModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Confirm delete
+        async function confirmDelete() {
+            if (deleteConsultationId) {
+                allConsultations = allConsultations.filter(c => c._id !== deleteConsultationId);
+                filteredConsultations = filteredConsultations.filter(c => c._id !== deleteConsultationId);
+                showNotification('Consultation deleted successfully', 'success');
+                updateStats();
+                displayConsultations();
+                closeDeleteModal();
+                deleteConsultationId = null;
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('consultationModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close view modal
+        function closeViewModal() {
+            document.getElementById('viewConsultationModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            currentViewConsultationId = null;
+        }
+
+        // Close delete modal
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            deleteConsultationId = null;
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const consultationModal = document.getElementById('consultationModal');
+            const viewModal = document.getElementById('viewConsultationModal');
+            const noteModal = document.getElementById('noteModal');
+            const deleteModal = document.getElementById('deleteModal');
+            
+            if (event.target == consultationModal) {
+                closeModal();
+            }
+            if (event.target == viewModal) {
+                closeViewModal();
+            }
+            if (event.target == noteModal) {
+                closeNoteModal();
+            }
+            if (event.target == deleteModal) {
+                closeDeleteModal();
+            }
+        };
+
+        // Close on Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+                closeViewModal();
+                closeNoteModal();
+                closeDeleteModal();
+            }
+        });
+
+        // Show loading state
+        function showLoading() {
+            document.querySelectorAll('.stat-mini-card').forEach(card => {
+                card.style.opacity = '0.5';
+            });
+        }
+
+        // Hide loading state
+        function hideLoading() {
+            document.querySelectorAll('.stat-mini-card').forEach(card => {
+                card.style.opacity = '1';
+            });
+        }
+
+        // Update last updated time
+        function updateLastUpdated() {
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent = `Last updated: ${now.toLocaleTimeString()}`;
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const toast = document.getElementById('notificationToast');
+            const messageEl = document.getElementById('notificationMessage');
+            
+            toast.className = `notification-toast ${type}`;
+            messageEl.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        });
+
+        // Make functions global
+        window.filterConsultations = filterConsultations;
+        window.resetFilters = resetFilters;
+        window.changePage = changePage;
+        window.toggleSelectAll = toggleSelectAll;
+        window.openAddConsultationModal = openAddConsultationModal;
+        window.editConsultation = editConsultation;
+        window.viewConsultation = viewConsultation;
+        window.deleteConsultation = deleteConsultation;
+        window.confirmDelete = confirmDelete;
+        window.closeModal = closeModal;
+        window.closeViewModal = closeViewModal;
+        window.closeDeleteModal = closeDeleteModal;
+        window.clearSelection = clearSelection;
+        window.applyBulkAction = applyBulkAction;
+        window.exportConsultations = exportConsultations;
+        window.switchTab = switchTab;
+        window.addConsultationNote = addConsultationNote;
+        window.saveNote = saveNote;
+        window.closeNoteModal = closeNoteModal;
+        window.sendReminder = sendReminder;
+        window.downloadConsultation = downloadConsultation;
+        window.viewNotes = viewNotes;
+        window.updateConsultationStatus = updateConsultationStatus;
+        window.editFromView = editFromView;
+        window.loadConsultations = loadConsultations;
+    </script>
+</body>
+</html>

@@ -1,0 +1,2446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Quadelo Technologies</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="css/admin-style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Dashboard Specific Styles - Fully Responsive */
+        :root {
+            --primary-blue: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-blue: #0ea5e9;
+            --success-green: #16a34a;
+            --warning-yellow: #f59e0b;
+            --danger-red: #dc2626;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --sidebar-width: 280px;
+            --sidebar-collapsed-width: 80px;
+            --chart-height: 300px;
+            --stat-card-transition: all 0.3s ease;
+        }
+
+        /* ===== SIDEBAR AND MAIN LAYOUT FIXES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            background: var(--gray-50);
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            border-right: 1px solid var(--gray-200);
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+
+        .sidebar.collapsed .sidebar-header .logo span,
+        .sidebar.collapsed .sidebar-nav a span,
+        .sidebar.collapsed .admin-info div {
+            display: none;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo span {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .logo span span {
+            color: var(--primary-blue);
+        }
+
+        .toggle-sidebar {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--gray-500);
+            font-size: 1.2rem;
+            padding: 5px;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin: 5px 0;
+        }
+
+        .sidebar-nav li.active a {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: white;
+            margin: 0 10px;
+            border-radius: 8px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: var(--gray-600);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .sidebar-nav a:hover {
+            background: var(--gray-100);
+            color: var(--primary-blue);
+        }
+
+        .sidebar-nav i {
+            width: 20px;
+        }
+
+        .badge {
+            margin-left: auto;
+            background: var(--gray-200);
+            color: var(--gray-700);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--gray-200);
+            margin: 20px 10px;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--gray-200);
+            background: white;
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+            width: calc(100% - var(--sidebar-width));
+            min-height: 100vh;
+            background: var(--gray-50);
+        }
+
+        .sidebar.collapsed + .main-content {
+            margin-left: var(--sidebar-collapsed-width);
+            width: calc(100% - var(--sidebar-collapsed-width));
+        }
+
+        /* Mobile menu button */
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1002;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 15px;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            font-size: 1.2rem;
+        }
+
+        /* Sidebar overlay for mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            backdrop-filter: blur(3px);
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Top bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 10px 0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .page-title h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            color: var(--gray-900);
+        }
+
+        .page-title p {
+            color: var(--gray-500);
+            font-size: 0.95rem;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .refresh-btn {
+            background: var(--gray-100);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: var(--primary-blue);
+            transition: all 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+            transform: rotate(180deg);
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
+            transition: var(--stat-card-transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--secondary-blue));
+        }
+
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .kpi-title {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .kpi-icon.users { background: #eef2ff; color: #2563eb; }
+        .kpi-icon.courses { background: #f3e8ff; color: #9333ea; }
+        .kpi-icon.projects { background: #dcfce7; color: #16a34a; }
+        .kpi-icon.revenue { background: #fef3c7; color: #d97706; }
+        .kpi-icon.systems { background: #ffe4e6; color: #e11d48; }
+        .kpi-icon.services { background: #cffafe; color: #0891b2; }
+        .kpi-icon.enrollments { background: #e0f2fe; color: #0284c7; }
+
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 5px;
+            line-height: 1.2;
+        }
+
+        .kpi-footer {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--gray-200);
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* Chart Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .chart-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-title h3 {
+            font-size: 1.2rem;
+            color: var(--gray-900);
+            margin: 0;
+        }
+
+        .chart-title i {
+            font-size: 1.3rem;
+            color: var(--primary-blue);
+        }
+
+        .chart-container {
+            height: var(--chart-height);
+            position: relative;
+        }
+
+        /* Analytics Grid */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .analytics-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
+        }
+
+        .analytics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .analytics-header h3 {
+            font-size: 1.1rem;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .analytics-header h3 i {
+            color: var(--primary-blue);
+        }
+
+        .analytics-header a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Top Items List */
+        .top-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .top-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-200);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .top-item:last-child {
+            border-bottom: none;
+        }
+
+        .top-rank {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-right: 12px;
+        }
+
+        .top-rank.gold { background: #fef3c7; color: #d97706; }
+        .top-rank.silver { background: #f1f5f9; color: #475569; }
+        .top-rank.bronze { background: #ffedd5; color: #9a3412; }
+
+        .top-info {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .top-name {
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 3px;
+        }
+
+        .top-meta {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .top-value {
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+
+        /* Progress Bars */
+        .progress-list {
+            margin-top: 15px;
+        }
+
+        .progress-item {
+            margin-bottom: 15px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .progress-title {
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .progress-percent {
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-blue), var(--secondary-blue));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* Activity Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--gray-200);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -30px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid;
+            z-index: 1;
+        }
+
+        .timeline-dot.info { border-color: #2563eb; }
+        .timeline-dot.success { border-color: #16a34a; }
+        .timeline-dot.warning { border-color: #d97706; }
+        .timeline-dot.error { border-color: #dc2626; }
+
+        .timeline-content {
+            background: var(--gray-50);
+            padding: 12px 15px;
+            border-radius: 8px;
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .timeline-time {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+
+        .timeline-description {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+
+        /* Quick Actions */
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .quick-action-card {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 20px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid var(--gray-200);
+        }
+
+        .quick-action-card:hover {
+            background: linear-gradient(135deg, #2563eb, #0ea5e9);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .quick-action-card:hover i,
+        .quick-action-card:hover span {
+            color: white;
+        }
+
+        .quick-action-card i {
+            font-size: 2rem;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+
+        .quick-action-card span {
+            display: block;
+            font-weight: 500;
+            color: var(--gray-700);
+            transition: all 0.3s;
+        }
+
+        /* System Health */
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .health-item {
+            text-align: center;
+            padding: 15px;
+            background: var(--gray-50);
+            border-radius: 8px;
+        }
+
+        .health-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .health-label {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+
+        .health-status {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .status-operational { background: #16a34a; }
+        .status-degraded { background: #d97706; }
+        .status-down { background: #dc2626; }
+
+        /* Notification Toast */
+        .notification-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-left: 4px solid var(--primary-blue);
+            box-shadow: var(--shadow-lg);
+            padding: 15px 20px;
+            border-radius: 8px;
+            z-index: 1000000;
+            display: none;
+            animation: slideIn 0.3s ease;
+            min-width: 350px;
+            max-width: 450px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification-toast.show {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .notification-toast.success { border-left-color: #10b981; }
+        .notification-toast.error { border-left-color: #ef4444; }
+        .notification-toast.warning { border-left-color: #f59e0b; }
+
+        .toast-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .toast-details {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            background: var(--gray-50);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: monospace;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        /* Error Details Panel */
+        .error-panel {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-panel.show {
+            display: block;
+        }
+
+        .error-panel h3 {
+            color: #b91c1c;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .error-panel pre {
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            color: #7f1d1d;
+            border: 1px solid #fecaca;
+        }
+
+        .error-item {
+            padding: 12px;
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+            margin-bottom: 10px;
+            border-radius: 6px;
+        }
+
+        .error-item.success {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .error-item.warning {
+            border-left-color: #f59e0b;
+            background: #fffbeb;
+        }
+
+        .error-endpoint {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--gray-900);
+        }
+
+        .error-message {
+            font-size: 0.9rem;
+            color: var(--gray-700);
+            margin-bottom: 5px;
+        }
+
+        .error-status {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+        }
+
+        .error-stack {
+            font-size: 0.8rem;
+            background: rgba(0,0,0,0.05);
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 5px;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+
+        /* Loading States */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--gray-200);
+            border-top-color: var(--primary-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray-500);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--gray-300);
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+        }
+
+        /* ===== RESPONSIVE BREAKPOINTS ===== */
+
+        /* Desktop */
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Tablet Landscape */
+        @media (max-width: 992px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Tablet Portrait */
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px !important;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 60px 15px 15px 15px;
+            }
+            
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-top: 10px;
+            }
+            
+            .top-bar-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .quick-actions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .health-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .top-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .top-rank {
+                margin-bottom: 5px;
+            }
+            
+            .notification-toast {
+                min-width: auto;
+                width: 90%;
+                right: 5%;
+                left: 5%;
+            }
+        }
+
+        /* Mobile Landscape */
+        @media (max-width: 576px) {
+            .kpi-value {
+                font-size: 2rem;
+            }
+            
+            .quick-actions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .timeline {
+                padding-left: 20px;
+            }
+            
+            .timeline-dot {
+                left: -20px;
+                width: 16px;
+                height: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileMenu()"></div>
+
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-cube" style="font-size: 2rem; color: var(--primary-blue);"></i>
+                    <span>Quadelo<span>Tech</span></span>
+                </div>
+                <button class="toggle-sidebar" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active">
+                        <a href="admin-dashboard.html">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-users.html">
+                            <i class="fas fa-users"></i>
+                            <span>Users</span>
+                            <span class="badge" id="userCount">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-courses.html">
+                            <i class="fas fa-book"></i>
+                            <span>Courses</span>
+                            <span class="badge" id="courseCount">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-services.html">
+                            <i class="fas fa-cogs"></i>
+                            <span>Services</span>
+                            <span class="badge" id="serviceCount">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-projects.html">
+                            <i class="fas fa-project-diagram"></i>
+                            <span>Projects</span>
+                            <span class="badge" id="projectCount">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-systems.html">
+                            <i class="fas fa-microchip"></i>
+                            <span>Systems</span>
+                            <span class="badge" id="systemCount">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-enrollments.html">
+                            <i class="fas fa-user-graduate"></i>
+                            <span>Enrollments</span>
+                            <span class="badge" id="enrollmentCount">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-invoices.html">
+                            <i class="fas fa-file-invoice"></i>
+                            <span>Invoices</span>
+                            <span class="badge" id="invoiceCount">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-settings.html">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="admin-info">
+                    <img src="" alt="Admin" id="adminAvatar">
+                    <div>
+                        <p id="adminName">Loading...</p>
+                        <small>Administrator</small>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="page-title">
+                    <h1>Dashboard</h1>
+                    <p>Welcome back, <span id="welcomeAdmin">Admin</span>! Here's your platform overview.</p>
+                </div>
+                <div class="top-bar-actions">
+                    <button class="refresh-btn" onclick="loadDashboardData()" title="Refresh">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Error Details Panel -->
+            <div class="error-panel" id="errorPanel">
+                <h3><i class="fas fa-exclamation-triangle"></i> Error Details</h3>
+                <div id="errorDetails"></div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="kpi-grid" id="kpiGrid">
+                <!-- Total Enrollments Card -->
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Total Enrollments</span>
+                        <div class="kpi-icon enrollments">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value" id="totalEnrollments">0</div>
+                    <div class="kpi-footer">
+                        <span><i class="fas fa-check-circle"></i> <span id="confirmedEnrollments">0</span> confirmed</span>
+                        <span><i class="fas fa-clock"></i> <span id="pendingEnrollments">0</span> pending</span>
+                    </div>
+                </div>
+
+                <!-- Total Users Card -->
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Total Users</span>
+                        <div class="kpi-icon users">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value" id="totalUsers">0</div>
+                    <div class="kpi-footer">
+                        <span><i class="fas fa-user-plus"></i> <span id="newUsersThisMonth">0</span> this month</span>
+                        <span><i class="fas fa-user-check"></i> <span id="activeUsers">0</span> active</span>
+                    </div>
+                </div>
+
+                <!-- Total Courses Card -->
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Total Courses</span>
+                        <div class="kpi-icon courses">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value" id="totalCourses">0</div>
+                    <div class="kpi-footer">
+                        <span><i class="fas fa-plus-circle"></i> <span id="newCoursesThisMonth">0</span> this month</span>
+                        <span><i class="fas fa-star"></i> <span id="featuredCourses">0</span> featured</span>
+                    </div>
+                </div>
+
+                <!-- Active Projects Card -->
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Active Projects</span>
+                        <div class="kpi-icon projects">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value" id="activeProjects">0</div>
+                    <div class="kpi-footer">
+                        <span><i class="fas fa-check-circle"></i> <span id="completedProjects">0</span> completed</span>
+                        <span><i class="fas fa-clock"></i> <span id="pendingProjects">0</span> pending</span>
+                    </div>
+                </div>
+
+                <!-- Monthly Revenue Card -->
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Monthly Revenue</span>
+                        <div class="kpi-icon revenue">
+                            <i class="fas fa-naira-sign"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value" id="monthlyRevenue">₦0</div>
+                    <div class="kpi-footer">
+                        <span><i class="fas fa-credit-card"></i> <span id="paidInvoices">0</span> paid</span>
+                        <span><i class="fas fa-exclamation-circle"></i> <span id="overdueInvoices">0</span> overdue</span>
+                    </div>
+                </div>
+
+                <!-- Services Card -->
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Services</span>
+                        <div class="kpi-icon services">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value" id="totalServices">0</div>
+                    <div class="kpi-footer">
+                        <span><i class="fas fa-check-circle"></i> <span id="activeServices">0</span> active</span>
+                        <span><i class="fas fa-star"></i> <span id="featuredServices">0</span> featured</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <!-- Enrollment Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">
+                            <i class="fas fa-user-graduate"></i>
+                            <h3>Enrollments (Last 6 Months)</h3>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="enrollmentChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Revenue Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">
+                            <i class="fas fa-chart-line"></i>
+                            <h3>Monthly Revenue (Last 6 Months)</h3>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- User Growth Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">
+                            <i class="fas fa-users"></i>
+                            <h3>User Growth (Last 6 Months)</h3>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="userChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Enrollment Status Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">
+                            <i class="fas fa-chart-pie"></i>
+                            <h3>Enrollment Status</h3>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="enrollmentStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Grid -->
+            <div class="analytics-grid">
+                <!-- Recent Enrollments -->
+                <div class="analytics-card">
+                    <div class="analytics-header">
+                        <h3><i class="fas fa-clock"></i> Recent Enrollments</h3>
+                        <a href="admin-enrollments.html">View All <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <ul class="top-list" id="recentEnrollments">
+                        <li class="empty-state">
+                            <i class="fas fa-user-graduate"></i>
+                            <p>Loading enrollments...</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Top Courses -->
+                <div class="analytics-card">
+                    <div class="analytics-header">
+                        <h3><i class="fas fa-trophy"></i> Top Performing Courses</h3>
+                        <a href="admin-courses.html">View All <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <ul class="top-list" id="topCourses">
+                        <li class="empty-state">
+                            <i class="fas fa-book"></i>
+                            <p>Loading courses...</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Top Clients -->
+                <div class="analytics-card">
+                    <div class="analytics-header">
+                        <h3><i class="fas fa-building"></i> Top Clients by Revenue</h3>
+                        <a href="admin-users.html?role=client">View All <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <ul class="top-list" id="topClients">
+                        <li class="empty-state">
+                            <i class="fas fa-building"></i>
+                            <p>Loading clients...</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Project Progress -->
+                <div class="analytics-card">
+                    <div class="analytics-header">
+                        <h3><i class="fas fa-chart-progress"></i> Active Projects Progress</h3>
+                        <a href="admin-projects.html">View All <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="progress-list" id="projectProgress">
+                        <div class="empty-state">
+                            <i class="fas fa-project-diagram"></i>
+                            <p>No active projects</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="analytics-card">
+                    <div class="analytics-header">
+                        <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                        <a href="admin-settings.html?tab=logs">View All <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="timeline" id="recentActivity">
+                        <div class="empty-state">
+                            <i class="fas fa-history"></i>
+                            <p>Loading activity...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="analytics-card">
+                <div class="analytics-header">
+                    <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                </div>
+                <div class="quick-actions-grid">
+                    <div class="quick-action-card" onclick="location.href='admin-enrollments.html?action=manual'">
+                        <i class="fas fa-user-graduate"></i>
+                        <span>Manual Enrollment</span>
+                    </div>
+                    <div class="quick-action-card" onclick="location.href='admin-users.html?action=new'">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Add User</span>
+                    </div>
+                    <div class="quick-action-card" onclick="location.href='admin-courses.html?action=new'">
+                        <i class="fas fa-book"></i>
+                        <span>New Course</span>
+                    </div>
+                    <div class="quick-action-card" onclick="location.href='admin-projects.html?action=new'">
+                        <i class="fas fa-project-diagram"></i>
+                        <span>New Project</span>
+                    </div>
+                    <div class="quick-action-card" onclick="generateReport()">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Generate Report</span>
+                    </div>
+                    <div class="quick-action-card" onclick="exportEnrollments()">
+                        <i class="fas fa-file-export"></i>
+                        <span>Export Data</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notificationToast" class="notification-toast">
+        <div class="toast-header">
+            <i class="fas fa-info-circle"></i>
+            <span id="notificationTitle">Info</span>
+        </div>
+        <span id="notificationMessage"></span>
+        <div id="notificationDetails" class="toast-details" style="display: none;"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let revenueChart, userChart, enrollmentChart, enrollmentStatusChart;
+        let allErrors = [];
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            
+            if (!token || !user || user.role !== 'admin') {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Set user info
+            document.getElementById('welcomeAdmin').textContent = user.name;
+            document.getElementById('adminName').textContent = user.name;
+            if (user.profile?.avatar) {
+                document.getElementById('adminAvatar').src = user.profile.avatar;
+            } else {
+                document.getElementById('adminAvatar').src = 'https://randomuser.me/api/portraits/men/1.jpg';
+            }
+
+            // Initialize charts
+            initCharts();
+            
+            // Load all dashboard data
+            loadDashboardData();
+            
+            // Add window resize handler
+            window.addEventListener('resize', handleResize);
+        });
+
+        // Handle window resize
+        function handleResize() {
+            if (window.innerWidth > 768) {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                sidebar.classList.remove('active');
+                if (overlay) overlay.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Mobile menu functions
+        window.toggleMobileMenu = function() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : 'auto';
+        };
+
+        window.closeMobileMenu = function() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        };
+
+        // Close mobile menu when clicking nav links
+        document.querySelectorAll('.sidebar-nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    closeMobileMenu();
+                }
+            });
+        });
+
+        // Toggle sidebar
+        document.getElementById('toggleSidebar').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        });
+
+        // Helper function to safely set text content
+        function safeSetTextContent(elementId, value) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent = value;
+            } else {
+                console.warn(`Element with id '${elementId}' not found`);
+            }
+        }
+
+        // Enhanced notification with error details
+        function showErrorNotification(title, message, details = null, error = null) {
+            const toast = document.getElementById('notificationToast');
+            const titleEl = document.getElementById('notificationTitle');
+            const messageEl = document.getElementById('notificationMessage');
+            const detailsEl = document.getElementById('notificationDetails');
+            
+            toast.className = `notification-toast error`;
+            titleEl.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${title}`;
+            messageEl.textContent = message;
+            
+            if (details || error) {
+                let detailText = '';
+                if (error) {
+                    detailText += `Error: ${error.message || error}\n`;
+                    if (error.stack) {
+                        detailText += `Stack: ${error.stack}`;
+                    }
+                }
+                if (details) {
+                    detailText += details;
+                }
+                detailsEl.textContent = detailText;
+                detailsEl.style.display = 'block';
+            } else {
+                detailsEl.style.display = 'none';
+            }
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 8000);
+        }
+
+        function showSuccessNotification(message) {
+            const toast = document.getElementById('notificationToast');
+            const titleEl = document.getElementById('notificationTitle');
+            const messageEl = document.getElementById('notificationMessage');
+            const detailsEl = document.getElementById('notificationDetails');
+            
+            toast.className = `notification-toast success`;
+            titleEl.innerHTML = `<i class="fas fa-check-circle"></i> Success`;
+            messageEl.textContent = message;
+            detailsEl.style.display = 'none';
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function showWarningNotification(message, details = null) {
+            const toast = document.getElementById('notificationToast');
+            const titleEl = document.getElementById('notificationTitle');
+            const messageEl = document.getElementById('notificationMessage');
+            const detailsEl = document.getElementById('notificationDetails');
+            
+            toast.className = `notification-toast warning`;
+            titleEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Warning`;
+            messageEl.textContent = message;
+            
+            if (details) {
+                detailsEl.textContent = details;
+                detailsEl.style.display = 'block';
+            } else {
+                detailsEl.style.display = 'none';
+            }
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 5000);
+        }
+
+        // Load all dashboard data from database with detailed error tracking
+        async function loadDashboardData() {
+            showLoading();
+            allErrors = [];
+            
+            // Clear error panel
+            const errorPanel = document.getElementById('errorPanel');
+            const errorDetails = document.getElementById('errorDetails');
+            if (errorPanel) errorPanel.classList.remove('show');
+            if (errorDetails) errorDetails.innerHTML = '';
+            
+            try {
+                // Test server health first
+                try {
+                    console.log('🔍 Testing server health...');
+                    const healthRes = await fetch(`${API_URL.replace('/api', '')}/health`);
+                    if (healthRes.ok) {
+                        const healthData = await healthRes.json();
+                        console.log('✅ Server health:', healthData);
+                    } else {
+                        const error = new Error(`Health check failed with status ${healthRes.status}`);
+                        allErrors.push({
+                            endpoint: 'health',
+                            status: healthRes.status,
+                            statusText: healthRes.statusText,
+                            error: error
+                        });
+                        console.warn('❌ Health check failed:', healthRes.status);
+                    }
+                } catch (e) {
+                    allErrors.push({
+                        endpoint: 'health',
+                        error: e,
+                        message: e.message
+                    });
+                    console.warn('❌ Health check error:', e.message);
+                }
+
+                // Initialize data objects
+                let usersData = { users: [], count: 0 };
+                let coursesData = { courses: [], count: 0 };
+                let projectsData = { projects: [], count: 0 };
+                let servicesData = { services: [], count: 0 };
+                let enrollmentsData = { enrollments: [], count: 0 };
+                let systemsData = { systems: [], count: 0 };
+                let invoicesData = { stats: {} };
+
+                // Try to fetch users
+                try {
+                    console.log('🔍 Fetching users...');
+                    const usersRes = await fetch(`${API_URL}/users`, {
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                    });
+                    
+                    if (usersRes.ok) {
+                        usersData = await usersRes.json();
+                        console.log('✅ Users loaded:', usersData.users?.length || 0);
+                    } else {
+                        const error = new Error(`HTTP ${usersRes.status}: ${usersRes.statusText}`);
+                        allErrors.push({
+                            endpoint: '/api/users',
+                            status: usersRes.status,
+                            statusText: usersRes.statusText,
+                            error: error
+                        });
+                        console.warn('❌ Users endpoint failed:', usersRes.status, usersRes.statusText);
+                    }
+                } catch (e) {
+                    allErrors.push({
+                        endpoint: '/api/users',
+                        error: e,
+                        message: e.message,
+                        stack: e.stack
+                    });
+                    console.error('❌ Users fetch error:', e);
+                }
+
+                // Try to fetch courses
+                try {
+                    console.log('🔍 Fetching courses...');
+                    const coursesRes = await fetch(`${API_URL}/courses`);
+                    
+                    if (coursesRes.ok) {
+                        coursesData = await coursesRes.json();
+                        console.log('✅ Courses loaded:', coursesData.courses?.length || 0);
+                    } else {
+                        const error = new Error(`HTTP ${coursesRes.status}: ${coursesRes.statusText}`);
+                        allErrors.push({
+                            endpoint: '/api/courses',
+                            status: coursesRes.status,
+                            statusText: coursesRes.statusText,
+                            error: error
+                        });
+                        console.warn('❌ Courses endpoint failed:', coursesRes.status, coursesRes.statusText);
+                    }
+                } catch (e) {
+                    allErrors.push({
+                        endpoint: '/api/courses',
+                        error: e,
+                        message: e.message,
+                        stack: e.stack
+                    });
+                    console.error('❌ Courses fetch error:', e);
+                }
+
+                // Try to fetch projects
+                try {
+                    console.log('🔍 Fetching projects...');
+                    const projectsRes = await fetch(`${API_URL}/projects`, {
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                    });
+                    
+                    if (projectsRes.ok) {
+                        projectsData = await projectsRes.json();
+                        console.log('✅ Projects loaded:', projectsData.projects?.length || 0);
+                    } else {
+                        const error = new Error(`HTTP ${projectsRes.status}: ${projectsRes.statusText}`);
+                        allErrors.push({
+                            endpoint: '/api/projects',
+                            status: projectsRes.status,
+                            statusText: projectsRes.statusText,
+                            error: error
+                        });
+                        console.warn('❌ Projects endpoint failed:', projectsRes.status, projectsRes.statusText);
+                    }
+                } catch (e) {
+                    allErrors.push({
+                        endpoint: '/api/projects',
+                        error: e,
+                        message: e.message,
+                        stack: e.stack
+                    });
+                    console.error('❌ Projects fetch error:', e);
+                }
+
+                // Try to fetch services
+                try {
+                    console.log('🔍 Fetching services...');
+                    const servicesRes = await fetch(`${API_URL}/services`);
+                    
+                    if (servicesRes.ok) {
+                        servicesData = await servicesRes.json();
+                        console.log('✅ Services loaded:', servicesData.services?.length || 0);
+                    } else {
+                        const error = new Error(`HTTP ${servicesRes.status}: ${servicesRes.statusText}`);
+                        allErrors.push({
+                            endpoint: '/api/services',
+                            status: servicesRes.status,
+                            statusText: servicesRes.statusText,
+                            error: error
+                        });
+                        console.warn('❌ Services endpoint failed:', servicesRes.status, servicesRes.statusText);
+                    }
+                } catch (e) {
+                    allErrors.push({
+                        endpoint: '/api/services',
+                        error: e,
+                        message: e.message,
+                        stack: e.stack
+                    });
+                    console.error('❌ Services fetch error:', e);
+                }
+
+                // Try to fetch enrollments
+                try {
+                    console.log('🔍 Fetching enrollments...');
+                    const enrollmentsRes = await fetch(`${API_URL}/enrollments`, {
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                    });
+                    
+                    if (enrollmentsRes.ok) {
+                        enrollmentsData = await enrollmentsRes.json();
+                        console.log('✅ Enrollments loaded:', enrollmentsData.enrollments?.length || 0);
+                    } else {
+                        const error = new Error(`HTTP ${enrollmentsRes.status}: ${enrollmentsRes.statusText}`);
+                        allErrors.push({
+                            endpoint: '/api/enrollments',
+                            status: enrollmentsRes.status,
+                            statusText: enrollmentsRes.statusText,
+                            error: error
+                        });
+                        console.warn('❌ Enrollments endpoint failed:', enrollmentsRes.status, enrollmentsRes.statusText);
+                    }
+                } catch (e) {
+                    allErrors.push({
+                        endpoint: '/api/enrollments',
+                        error: e,
+                        message: e.message,
+                        stack: e.stack
+                    });
+                    console.error('❌ Enrollments fetch error:', e);
+                }
+
+                // Try to fetch systems
+                try {
+                    console.log('🔍 Fetching systems...');
+                    const systemsRes = await fetch(`${API_URL}/systems`, {
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                    });
+                    
+                    if (systemsRes.ok) {
+                        systemsData = await systemsRes.json();
+                        console.log('✅ Systems loaded:', systemsData.systems?.length || 0);
+                    } else {
+                        const error = new Error(`HTTP ${systemsRes.status}: ${systemsRes.statusText}`);
+                        allErrors.push({
+                            endpoint: '/api/systems',
+                            status: systemsRes.status,
+                            statusText: systemsRes.statusText,
+                            error: error
+                        });
+                        console.warn('❌ Systems endpoint failed:', systemsRes.status, systemsRes.statusText);
+                    }
+                } catch (e) {
+                    allErrors.push({
+                        endpoint: '/api/systems',
+                        error: e,
+                        message: e.message,
+                        stack: e.stack
+                    });
+                    console.error('❌ Systems fetch error:', e);
+                }
+
+                // Try to fetch invoices stats
+                try {
+                    console.log('🔍 Fetching invoices...');
+                    const invoicesRes = await fetch(`${API_URL}/invoices/stats`, {
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                    });
+                    
+                    if (invoicesRes.ok) {
+                        invoicesData = await invoicesRes.json();
+                        console.log('✅ Invoices loaded:', invoicesData.stats);
+                    } else {
+                        const error = new Error(`HTTP ${invoicesRes.status}: ${invoicesRes.statusText}`);
+                        allErrors.push({
+                            endpoint: '/api/invoices/stats/overview',
+                            status: invoicesRes.status,
+                            statusText: invoicesRes.statusText,
+                            error: error
+                        });
+                        console.warn('❌ Invoices endpoint failed:', invoicesRes.status, invoicesRes.statusText);
+                    }
+                } catch (e) {
+                    allErrors.push({
+                        endpoint: '/api/invoices/stats/overview',
+                        error: e,
+                        message: e.message,
+                        stack: e.stack
+                    });
+                    console.error('❌ Invoices fetch error:', e);
+                }
+
+                // Update KPI cards with available data
+                updateKPIs(usersData, coursesData, projectsData, servicesData, systemsData, invoicesData, enrollmentsData);
+                
+                // Update sidebar badges
+                updateSidebarBadges(usersData, coursesData, servicesData, projectsData, systemsData, invoicesData, enrollmentsData);
+                
+                // Update charts with available data
+                updateChartsWithData(usersData, coursesData, projectsData, enrollmentsData);
+                
+                // Update recent enrollments if available
+                if (enrollmentsData.enrollments && document.getElementById('recentEnrollments')) {
+                    updateRecentEnrollments(enrollmentsData.enrollments || []);
+                }
+                
+                // Update top lists with available data
+                if (coursesData.courses && document.getElementById('topCourses')) {
+                    updateTopCourses(coursesData.courses || []);
+                }
+                
+                if (projectsData.projects && document.getElementById('topClients')) {
+                    updateTopClients(projectsData.projects || []);
+                }
+                
+                if (projectsData.projects && document.getElementById('projectProgress')) {
+                    updateProjectProgress(projectsData.projects || []);
+                }
+                
+                if (document.getElementById('recentActivity')) {
+                    updateRecentActivity();
+                }
+                
+                // Show error summary if there were errors
+                if (allErrors.length > 0) {
+                    displayErrorSummary(allErrors);
+                    showErrorNotification(
+                        'Dashboard Loaded with Errors',
+                        `Loaded with ${allErrors.length} error(s). Click refresh to try again.`,
+                        allErrors.map(e => `${e.endpoint}: ${e.status || e.message}`).join('\n')
+                    );
+                } else {
+                    showSuccessNotification('Dashboard data loaded successfully');
+                }
+                
+            } catch (error) {
+                console.error('❌ Critical error loading dashboard:', error);
+                allErrors.push({
+                    endpoint: 'global',
+                    error: error,
+                    message: error.message,
+                    stack: error.stack
+                });
+                displayErrorSummary(allErrors);
+                showErrorNotification(
+                    'Failed to Load Dashboard',
+                    error.message,
+                    error.stack,
+                    error
+                );
+            }
+            
+            hideLoading();
+        }
+
+        // Display error summary in panel
+        function displayErrorSummary(errors) {
+            const panel = document.getElementById('errorPanel');
+            const details = document.getElementById('errorDetails');
+            
+            if (!panel || !details) return;
+            
+            if (errors.length === 0) {
+                panel.classList.remove('show');
+                return;
+            }
+
+            let html = '<div style="margin-bottom: 10px; font-weight: 600;">Error Summary:</div>';
+            
+            errors.forEach((error, index) => {
+                const statusClass = error.status === 404 ? 'warning' : 
+                                   error.status >= 500 ? 'error' : 
+                                   error.status >= 400 ? 'warning' : 'info';
+                
+                html += `
+                    <div class="error-item ${statusClass}">
+                        <div class="error-endpoint">
+                            <i class="fas fa-${error.status === 404 ? 'exclamation-triangle' : 'times-circle'}"></i>
+                            ${error.endpoint}
+                        </div>
+                        <div class="error-message">
+                            ${error.message || error.error?.message || 'Unknown error'}
+                            ${error.status ? `(Status: ${error.status} ${error.statusText || ''})` : ''}
+                        </div>
+                        ${error.stack ? `<pre class="error-stack">${error.stack}</pre>` : ''}
+                    </div>
+                `;
+            });
+
+            html += `
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <button class="btn-primary" onclick="loadDashboardData()" style="padding: 8px 16px;">
+                        <i class="fas fa-sync-alt"></i> Retry
+                    </button>
+                    <button class="btn-outline" onclick="document.getElementById('errorPanel').classList.remove('show')" style="padding: 8px 16px;">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            `;
+            
+            details.innerHTML = html;
+            panel.classList.add('show');
+        }
+
+        // Update KPI cards with real database data
+        function updateKPIs(usersData, coursesData, projectsData, servicesData, systemsData, invoicesData, enrollmentsData) {
+            // Enrollments - with null checks
+            const enrollments = enrollmentsData.enrollments || [];
+            const totalEnrollments = enrollments.length;
+            const confirmedEnrollments = enrollments.filter(e => e && e.status === 'confirmed').length;
+            const pendingEnrollments = enrollments.filter(e => e && e.status === 'pending').length;
+            
+            // Safely update elements if they exist
+            safeSetTextContent('totalEnrollments', totalEnrollments);
+            safeSetTextContent('confirmedEnrollments', confirmedEnrollments);
+            safeSetTextContent('pendingEnrollments', pendingEnrollments);
+
+            // Users
+            const users = usersData.users || [];
+            const totalUsers = users.length;
+            const newUsersThisMonth = countNewThisMonth(users);
+            const activeUsers = countActiveUsers(users);
+            
+            safeSetTextContent('totalUsers', totalUsers);
+            safeSetTextContent('newUsersThisMonth', newUsersThisMonth);
+            safeSetTextContent('activeUsers', activeUsers);
+
+            // Courses
+            const courses = coursesData.courses || [];
+            const totalCourses = courses.length;
+            const newCoursesThisMonth = countNewThisMonth(courses);
+            const featuredCourses = courses.filter(c => c && c.featured).length;
+            
+            safeSetTextContent('totalCourses', totalCourses);
+            safeSetTextContent('newCoursesThisMonth', newCoursesThisMonth);
+            safeSetTextContent('featuredCourses', featuredCourses);
+
+            // Projects
+            const projects = projectsData.projects || [];
+            const activeProjects = projects.filter(p => p && p.status === 'Active').length;
+            const completedProjects = projects.filter(p => p && p.status === 'Completed').length;
+            const pendingProjects = projects.filter(p => p && (p.status === 'Proposal' || p.status === 'Planning')).length;
+            
+            safeSetTextContent('activeProjects', activeProjects);
+            safeSetTextContent('completedProjects', completedProjects);
+            safeSetTextContent('pendingProjects', pendingProjects);
+
+            // Services
+            const services = servicesData.services || [];
+            const totalServices = services.length;
+            const activeServices = services.filter(s => s && s.isActive).length;
+            const featuredServices = services.filter(s => s && s.featured).length;
+            
+            safeSetTextContent('totalServices', totalServices);
+            safeSetTextContent('activeServices', activeServices);
+            safeSetTextContent('featuredServices', featuredServices);
+
+            // Systems
+            const systems = systemsData.systems || [];
+            safeSetTextContent('activeSystems', systems.length || 0);
+            safeSetTextContent('operationalSystems', systems.filter(s => s && s.status === 'Operational').length || 0);
+            safeSetTextContent('degradedSystems', systems.filter(s => s && (s.status === 'Degraded' || s.status === 'Down')).length || 0);
+
+            // Revenue
+            // Revenue - match your actual API response structure
+            const monthlyRevenue = invoicesData.statistics?.monthlyRevenue?.[0]?.total || 0;
+            const paidInvoices = invoicesData.statistics?.statusDistribution?.find(s => s._id === 'Paid')?.count || 0;
+            const overdueInvoices = invoicesData.statistics?.statusDistribution?.find(s => s._id === 'Overdue')?.count || 0;
+            const totalInvoices = invoicesData.statistics?.totalInvoices || 0;
+            
+            safeSetTextContent('monthlyRevenue', `₦${monthlyRevenue.toLocaleString()}`);
+            safeSetTextContent('paidInvoices', paidInvoices);
+            safeSetTextContent('overdueInvoices', overdueInvoices);
+        }
+
+        // Count new items this month
+        function countNewThisMonth(items) {
+            const now = new Date();
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+            return items.filter(item => {
+                const created = new Date(item.createdAt);
+                return created >= monthStart;
+            }).length;
+        }
+
+        // Count active users (logged in within last 30 days)
+        function countActiveUsers(users) {
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            return users.filter(user => {
+                const lastLogin = new Date(user.lastLogin);
+                return lastLogin >= thirtyDaysAgo;
+            }).length;
+        }
+
+        // Update sidebar badges
+        function updateSidebarBadges(usersData, coursesData, servicesData, projectsData, systemsData, invoicesData, enrollmentsData) {
+            safeSetTextContent('enrollmentCount', enrollmentsData.enrollments?.length || 0);
+            safeSetTextContent('userCount', usersData.users?.length || 0);
+            safeSetTextContent('courseCount', coursesData.courses?.length || 0);
+            safeSetTextContent('serviceCount', servicesData.services?.length || 0);
+            safeSetTextContent('projectCount', projectsData.projects?.length || 0);
+            safeSetTextContent('systemCount', systemsData.systems?.length || 0);
+            safeSetTextContent('invoiceCount', invoicesData.stats?.totalInvoices || 0);
+        }
+
+        // Initialize charts
+        function initCharts() {
+            // Enrollment Chart
+            const enrollmentCtx = document.getElementById('enrollmentChart')?.getContext('2d');
+            if (enrollmentCtx) {
+                enrollmentChart = new Chart(enrollmentCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Enrollments',
+                            data: [],
+                            backgroundColor: '#2563eb',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart')?.getContext('2d');
+            if (revenueCtx) {
+                revenueChart = new Chart(revenueCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Revenue (₦)',
+                            data: [],
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '₦' + value.toLocaleString();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // User Growth Chart
+            const userCtx = document.getElementById('userChart')?.getContext('2d');
+            if (userCtx) {
+                userChart = new Chart(userCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [
+                            {
+                                label: 'Students',
+                                data: [],
+                                borderColor: '#16a34a',
+                                backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            },
+                            {
+                                label: 'Instructors',
+                                data: [],
+                                borderColor: '#9333ea',
+                                backgroundColor: 'rgba(147, 51, 234, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            },
+                            {
+                                label: 'Clients',
+                                data: [],
+                                borderColor: '#d97706',
+                                backgroundColor: 'rgba(217, 119, 6, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Enrollment Status Chart
+            const statusCtx = document.getElementById('enrollmentStatusChart')?.getContext('2d');
+            if (statusCtx) {
+                enrollmentStatusChart = new Chart(statusCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Pending', 'Confirmed', 'Completed', 'Cancelled'],
+                        datasets: [{
+                            data: [0, 0, 0, 0],
+                            backgroundColor: ['#f59e0b', '#16a34a', '#2563eb', '#ef4444'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        },
+                        cutout: '60%'
+                    }
+                });
+            }
+        }
+
+        // Update charts with real database data
+        function updateChartsWithData(usersData, coursesData, projectsData, enrollmentsData) {
+            // Generate last 6 months labels
+            const months = [];
+            const now = new Date();
+            for (let i = 5; i >= 0; i--) {
+                const date = new Date(now);
+                date.setMonth(date.getMonth() - i);
+                months.push(date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }));
+            }
+
+            // Update Enrollment Chart
+            if (enrollmentChart) {
+                const enrollmentData = generateMonthlyEnrollmentData(enrollmentsData.enrollments || []);
+                enrollmentChart.data.labels = months;
+                enrollmentChart.data.datasets[0].data = enrollmentData;
+                enrollmentChart.update();
+            }
+
+            // Update Revenue Chart (placeholder data if no data)
+            if (revenueChart) {
+                revenueChart.data.labels = months;
+                revenueChart.data.datasets[0].data = [0, 0, 0, 0, 0, 0];
+                revenueChart.update();
+            }
+
+            // Update User Chart
+            if (userChart) {
+                const userData = generateUserMonthlyData(usersData.users || []);
+                userChart.data.labels = months;
+                userChart.data.datasets[0].data = userData.students;
+                userChart.data.datasets[1].data = userData.instructors;
+                userChart.data.datasets[2].data = userData.clients;
+                userChart.update();
+            }
+
+            // Update Enrollment Status Chart
+            if (enrollmentStatusChart) {
+                const enrollments = enrollmentsData.enrollments || [];
+                const pending = enrollments.filter(e => e.status === 'pending').length;
+                const confirmed = enrollments.filter(e => e.status === 'confirmed').length;
+                const completed = enrollments.filter(e => e.status === 'completed').length;
+                const cancelled = enrollments.filter(e => e.status === 'cancelled').length;
+
+                enrollmentStatusChart.data.datasets[0].data = [pending, confirmed, completed, cancelled];
+                enrollmentStatusChart.update();
+            }
+        }
+
+        // Generate monthly enrollment data
+        function generateMonthlyEnrollmentData(enrollments) {
+            const monthlyData = [0, 0, 0, 0, 0, 0];
+            const now = new Date();
+            
+            enrollments.forEach(enrollment => {
+                const date = new Date(enrollment.enrolledAt || enrollment.createdAt);
+                const monthDiff = (now.getMonth() - date.getMonth()) + (12 * (now.getFullYear() - date.getFullYear()));
+                if (monthDiff >= 0 && monthDiff < 6) {
+                    monthlyData[5 - monthDiff] += 1;
+                }
+            });
+            
+            return monthlyData;
+        }
+
+        // Generate user monthly data by role
+        function generateUserMonthlyData(users) {
+            const students = [0, 0, 0, 0, 0, 0];
+            const instructors = [0, 0, 0, 0, 0, 0];
+            const clients = [0, 0, 0, 0, 0, 0];
+            const now = new Date();
+
+            users.forEach(user => {
+                const date = new Date(user.createdAt);
+                const monthDiff = (now.getMonth() - date.getMonth()) + (12 * (now.getFullYear() - date.getFullYear()));
+                
+                if (monthDiff >= 0 && monthDiff < 6) {
+                    const index = 5 - monthDiff;
+                    switch(user.role) {
+                        case 'student':
+                            students[index] += 1;
+                            break;
+                        case 'instructor':
+                            instructors[index] += 1;
+                            break;
+                        case 'client':
+                            clients[index] += 1;
+                            break;
+                    }
+                }
+            });
+
+            return { students, instructors, clients };
+        }
+
+        // Update recent enrollments
+        function updateRecentEnrollments(enrollments) {
+            const recent = enrollments
+                .sort((a, b) => new Date(b.enrolledAt || b.createdAt) - new Date(a.enrolledAt || a.createdAt))
+                .slice(0, 5);
+            
+            const container = document.getElementById('recentEnrollments');
+            if (!container) return;
+            
+            if (recent.length === 0) {
+                container.innerHTML = '<li class="empty-state"><i class="fas fa-user-graduate"></i><p>No enrollments found</p></li>';
+                return;
+            }
+
+            container.innerHTML = recent.map(enrollment => {
+                const statusColor = enrollment.status === 'confirmed' ? '#16a34a' :
+                                   enrollment.status === 'pending' ? '#f59e0b' :
+                                   enrollment.status === 'cancelled' ? '#dc2626' : '#2563eb';
+                
+                return `
+                <li class="top-item">
+                    <div class="top-info">
+                        <div class="top-name">${enrollment.name}</div>
+                        <div class="top-meta">
+                            <span><i class="fas fa-book"></i> ${enrollment.courseName || 'Course'}</span>
+                            <span><i class="fas fa-tag"></i> ${enrollment.status}</span>
+                        </div>
+                    </div>
+                    <div class="top-value">
+                        <span class="health-status" style="background: ${statusColor};"></span>
+                        ${new Date(enrollment.enrolledAt || enrollment.createdAt).toLocaleDateString()}
+                    </div>
+                </li>
+            `}).join('');
+        }
+
+        // Update top courses with real data
+        function updateTopCourses(courses) {
+            const sorted = courses
+                .sort((a, b) => (b.enrolledStudents?.length || 0) - (a.enrolledStudents?.length || 0))
+                .slice(0, 3);
+            
+            const container = document.getElementById('topCourses');
+            if (!container) return;
+            
+            if (sorted.length === 0) {
+                container.innerHTML = '<li class="empty-state"><i class="fas fa-book"></i><p>No courses found</p></li>';
+                return;
+            }
+
+            container.innerHTML = sorted.map((course, index) => `
+                <li class="top-item">
+                    <span class="top-rank ${index === 0 ? 'gold' : index === 1 ? 'silver' : 'bronze'}">${index + 1}</span>
+                    <div class="top-info">
+                        <div class="top-name">${course.title || 'Untitled'}</div>
+                        <div class="top-meta">
+                            <span><i class="fas fa-users"></i> ${course.enrolledStudents?.length || 0} students</span>
+                            <span><i class="fas fa-star"></i> ${course.rating || 0}</span>
+                        </div>
+                    </div>
+                    <div class="top-value">₦${((course.price || 0) * (course.enrolledStudents?.length || 0)).toLocaleString()}</div>
+                </li>
+            `).join('');
+        }
+
+        // Update top clients with real data
+        function updateTopClients(projects) {
+            const clientMap = new Map();
+            
+            projects.forEach(project => {
+                const clientName = project.clientInfo?.name || 'Unknown Client';
+                const revenue = project.budget?.total || 0;
+                
+                if (clientMap.has(clientName)) {
+                    const data = clientMap.get(clientName);
+                    data.projects++;
+                    data.revenue += revenue;
+                } else {
+                    clientMap.set(clientName, {
+                        name: clientName,
+                        projects: 1,
+                        revenue: revenue
+                    });
+                }
+            });
+            
+            const sorted = Array.from(clientMap.values())
+                .sort((a, b) => b.revenue - a.revenue)
+                .slice(0, 3);
+            
+            const container = document.getElementById('topClients');
+            if (!container) return;
+            
+            if (sorted.length === 0) {
+                container.innerHTML = '<li class="empty-state"><i class="fas fa-building"></i><p>No clients found</p></li>';
+                return;
+            }
+
+            container.innerHTML = sorted.map((client, index) => `
+                <li class="top-item">
+                    <span class="top-rank ${index === 0 ? 'gold' : index === 1 ? 'silver' : 'bronze'}">${index + 1}</span>
+                    <div class="top-info">
+                        <div class="top-name">${client.name}</div>
+                        <div class="top-meta">
+                            <span><i class="fas fa-project-diagram"></i> ${client.projects} projects</span>
+                        </div>
+                    </div>
+                    <div class="top-value">₦${client.revenue.toLocaleString()}</div>
+                </li>
+            `).join('');
+        }
+
+        // Update project progress with real data
+        function updateProjectProgress(projects) {
+            const container = document.getElementById('projectProgress');
+            
+            // Check if container exists
+            if (!container) {
+                console.warn('Project progress container not found');
+                return;
+            }
+            
+            const active = projects.filter(p => p && p.status === 'Active').slice(0, 3);
+            
+            if (active.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-project-diagram"></i><p>No active projects</p></div>';
+                return;
+            }
+
+            container.innerHTML = active.map(project => `
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span class="progress-title">${project.title || 'Untitled Project'}</span>
+                        <span class="progress-percent">${project.progress || 0}%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: ${project.progress || 0}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update recent activity
+        function updateRecentActivity() {
+            const container = document.getElementById('recentActivity');
+            if (!container) return;
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-history"></i><p>No recent activity</p></div>';
+        }
+
+        // Show loading state
+        function showLoading() {
+            document.querySelectorAll('.kpi-card').forEach(card => {
+                card.style.opacity = '0.7';
+            });
+        }
+
+        // Hide loading state
+        function hideLoading() {
+            document.querySelectorAll('.kpi-card').forEach(card => {
+                card.style.opacity = '1';
+            });
+        }
+
+        // Export enrollments
+        function exportEnrollments() {
+            showWarningNotification('Exporting data...', 'This feature will export all enrollment data to CSV format.');
+            setTimeout(() => {
+                showSuccessNotification('Data exported successfully!');
+            }, 2000);
+        }
+
+        // Generate report
+        function generateReport() {
+            showWarningNotification('Generating report...', 'This will generate a comprehensive PDF report of all platform data.');
+            setTimeout(() => {
+                showSuccessNotification('Report generated successfully!');
+            }, 2000);
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        });
+
+        // Make functions global
+        window.loadDashboardData = loadDashboardData;
+        window.generateReport = generateReport;
+        window.exportEnrollments = exportEnrollments;
+        window.toggleMobileMenu = toggleMobileMenu;
+        window.closeMobileMenu = closeMobileMenu;
+    </script>
+</body>
+</html>
