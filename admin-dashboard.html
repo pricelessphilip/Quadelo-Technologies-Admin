@@ -1074,7 +1074,7 @@
                     </li>
                     <li>
                         <a href="admin-consultation.html">
-                            <i class="fas fa-cog"></i>
+                            <i class="fas fa-calendar-check"></i>
                             <span>Consultation</span>
                         </a>
                     </li>
@@ -1716,10 +1716,10 @@
                     console.error('❌ Services fetch error:', e);
                 }
 
-                // Try to fetch enrollments
+                // Try to fetch enrollments with a large limit to get all
                 try {
                     console.log('🔍 Fetching enrollments...');
-                    const enrollmentsRes = await fetch(`${API_URL}/enrollments`, {
+                    const enrollmentsRes = await fetch(`${API_URL}/enrollments?limit=1000`, {
                         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                     });
                     
@@ -1776,34 +1776,34 @@
                     console.error('❌ Systems fetch error:', e);
                 }
 
-                // Try to fetch invoices stats
+                // Try to fetch invoices stats - FIXED ENDPOINT
                 try {
-                    console.log('🔍 Fetching invoices...');
+                    console.log('🔍 Fetching invoices stats...');
                     const invoicesRes = await fetch(`${API_URL}/invoices/stats`, {
                         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                     });
                     
                     if (invoicesRes.ok) {
                         invoicesData = await invoicesRes.json();
-                        console.log('✅ Invoices loaded:', invoicesData.stats);
+                        console.log('✅ Invoices stats loaded:', invoicesData.statistics);
                     } else {
                         const error = new Error(`HTTP ${invoicesRes.status}: ${invoicesRes.statusText}`);
                         allErrors.push({
-                            endpoint: '/api/invoices/stats/overview',
+                            endpoint: '/api/invoices/stats',
                             status: invoicesRes.status,
                             statusText: invoicesRes.statusText,
                             error: error
                         });
-                        console.warn('❌ Invoices endpoint failed:', invoicesRes.status, invoicesRes.statusText);
+                        console.warn('❌ Invoices stats endpoint failed:', invoicesRes.status, invoicesRes.statusText);
                     }
                 } catch (e) {
                     allErrors.push({
-                        endpoint: '/api/invoices/stats/overview',
+                        endpoint: '/api/invoices/stats',
                         error: e,
                         message: e.message,
                         stack: e.stack
                     });
-                    console.error('❌ Invoices fetch error:', e);
+                    console.error('❌ Invoices stats fetch error:', e);
                 }
 
                 // Update KPI cards with available data
@@ -1923,8 +1923,9 @@
             // Enrollments - with null checks
             const enrollments = enrollmentsData.enrollments || [];
             const totalEnrollments = enrollments.length;
-            const confirmedEnrollments = enrollments.filter(e => e && e.status === 'confirmed').length;
-            const pendingEnrollments = enrollments.filter(e => e && e.status === 'pending').length;
+            const confirmedEnrollments = enrollments.filter(e => e && (e.status === 'confirmed' || e.status === 'Confirmed')).length;
+            const pendingEnrollments = enrollments.filter(e => e && (e.status === 'pending' || e.status === 'Pending')).length;
+            const completedEnrollments = enrollments.filter(e => e && (e.status === 'completed' || e.status === 'Completed')).length;
             
             // Safely update elements if they exist
             safeSetTextContent('totalEnrollments', totalEnrollments);
@@ -1971,15 +1972,8 @@
             safeSetTextContent('activeServices', activeServices);
             safeSetTextContent('featuredServices', featuredServices);
 
-            // Systems
-            const systems = systemsData.systems || [];
-            safeSetTextContent('activeSystems', systems.length || 0);
-            safeSetTextContent('operationalSystems', systems.filter(s => s && s.status === 'Operational').length || 0);
-            safeSetTextContent('degradedSystems', systems.filter(s => s && (s.status === 'Degraded' || s.status === 'Down')).length || 0);
-
-            // Revenue
-            // Revenue - match your actual API response structure
-            const monthlyRevenue = invoicesData.statistics?.monthlyRevenue?.[0]?.total || 0;
+            // Revenue - FIXED: match your actual API response structure
+            const monthlyRevenue = invoicesData.statistics?.monthlyRevenue?.reduce((sum, item) => sum + (item.total || 0), 0) || 0;
             const paidInvoices = invoicesData.statistics?.statusDistribution?.find(s => s._id === 'Paid')?.count || 0;
             const overdueInvoices = invoicesData.statistics?.statusDistribution?.find(s => s._id === 'Overdue')?.count || 0;
             const totalInvoices = invoicesData.statistics?.totalInvoices || 0;
@@ -2017,7 +2011,7 @@
             safeSetTextContent('serviceCount', servicesData.services?.length || 0);
             safeSetTextContent('projectCount', projectsData.projects?.length || 0);
             safeSetTextContent('systemCount', systemsData.systems?.length || 0);
-            safeSetTextContent('invoiceCount', invoicesData.stats?.totalInvoices || 0);
+            safeSetTextContent('invoiceCount', invoicesData.statistics?.totalInvoices || 0);
         }
 
         // Initialize charts
@@ -2198,10 +2192,10 @@
             // Update Enrollment Status Chart
             if (enrollmentStatusChart) {
                 const enrollments = enrollmentsData.enrollments || [];
-                const pending = enrollments.filter(e => e.status === 'pending').length;
-                const confirmed = enrollments.filter(e => e.status === 'confirmed').length;
-                const completed = enrollments.filter(e => e.status === 'completed').length;
-                const cancelled = enrollments.filter(e => e.status === 'cancelled').length;
+                const pending = enrollments.filter(e => e.status === 'pending' || e.status === 'Pending').length;
+                const confirmed = enrollments.filter(e => e.status === 'confirmed' || e.status === 'Confirmed').length;
+                const completed = enrollments.filter(e => e.status === 'completed' || e.status === 'Completed').length;
+                const cancelled = enrollments.filter(e => e.status === 'cancelled' || e.status === 'Cancelled').length;
 
                 enrollmentStatusChart.data.datasets[0].data = [pending, confirmed, completed, cancelled];
                 enrollmentStatusChart.update();
@@ -2269,9 +2263,11 @@
             }
 
             container.innerHTML = recent.map(enrollment => {
-                const statusColor = enrollment.status === 'confirmed' ? '#16a34a' :
-                                   enrollment.status === 'pending' ? '#f59e0b' :
-                                   enrollment.status === 'cancelled' ? '#dc2626' : '#2563eb';
+                const statusColor = enrollment.status === 'confirmed' || enrollment.status === 'Confirmed' ? '#16a34a' :
+                                   enrollment.status === 'pending' || enrollment.status === 'Pending' ? '#f59e0b' :
+                                   enrollment.status === 'cancelled' || enrollment.status === 'Cancelled' ? '#dc2626' : '#2563eb';
+                
+                const statusText = enrollment.status ? enrollment.status.charAt(0).toUpperCase() + enrollment.status.slice(1) : 'Pending';
                 
                 return `
                 <li class="top-item">
@@ -2279,7 +2275,7 @@
                         <div class="top-name">${enrollment.name}</div>
                         <div class="top-meta">
                             <span><i class="fas fa-book"></i> ${enrollment.courseName || 'Course'}</span>
-                            <span><i class="fas fa-tag"></i> ${enrollment.status}</span>
+                            <span><i class="fas fa-tag"></i> ${statusText}</span>
                         </div>
                     </div>
                     <div class="top-value">
