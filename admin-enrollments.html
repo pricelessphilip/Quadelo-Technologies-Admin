@@ -260,6 +260,7 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            flex-wrap: wrap;
         }
 
         .search-box {
@@ -306,6 +307,25 @@
         .add-btn:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
+        }
+
+        .vcf-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .vcf-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
         .refresh-btn {
@@ -382,6 +402,75 @@
 
         .clear-filters:hover {
             text-decoration: underline;
+        }
+
+        /* Selection Bar */
+        .selection-bar {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .selection-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .range-inputs {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .range-inputs input {
+            padding: 8px 12px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            width: 100px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .selection-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .select-all-btn, .clear-selection-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .select-all-btn {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+        }
+
+        .clear-selection-btn {
+            background: var(--gray-200);
+            color: var(--gray-700);
+            border: none;
+        }
+
+        .select-all-btn:hover, .clear-selection-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .selected-count {
+            font-weight: 600;
+            color: var(--primary-blue);
         }
 
         /* Stats Cards */
@@ -506,6 +595,21 @@
             background: var(--gray-50);
         }
 
+        tr.selected {
+            background: #eef2ff;
+        }
+
+        .checkbox-col {
+            width: 40px;
+            text-align: center;
+        }
+
+        .checkbox-col input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
         .student-info {
             display: flex;
             align-items: center;
@@ -593,6 +697,10 @@
 
         .action-btn.pdf {
             background: #dc2626;
+        }
+
+        .action-btn.email {
+            background: #10b981;
         }
 
         .action-btn:hover {
@@ -703,6 +811,14 @@
             background: var(--gradient-danger);
         }
 
+        .modal-header.email-header {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .modal-header.vcf-header {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
         .modal-header h3 {
             font-size: 1.4rem;
             display: flex;
@@ -733,6 +849,61 @@
 
         .modal-body {
             padding: 30px;
+        }
+
+        .range-selection {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .range-selection h4 {
+            margin-bottom: 15px;
+            color: var(--gray-700);
+        }
+
+        .range-input-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .range-input-group input {
+            padding: 10px 12px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            width: 120px;
+        }
+
+        .preview-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 20px 0;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+        }
+
+        .preview-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .preview-item:last-child {
+            border-bottom: none;
+        }
+
+        .preview-item .name {
+            font-weight: 500;
+        }
+
+        .preview-item .phone {
+            color: var(--gray-500);
+            font-size: 0.9rem;
         }
 
         .form-group {
@@ -819,91 +990,56 @@
             box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
         }
 
-        /* PDF Styles */
-        .pdf-content {
-            font-family: 'Inter', sans-serif;
-            max-width: 800px;
-            margin: -150px auto;
-            margin-bottom: 0;
-            background: white;
-            padding: 30px;
+        .modal-btn.email {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
         }
 
-        .pdf-header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 3px solid var(--primary-blue);
+        .modal-btn.email:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
-        .pdf-header h1 {
-            color: var(--primary-blue);
-            font-size: 28px;
-            margin-bottom: 8px;
-            font-weight: 700;
+        .modal-btn.vcf {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
         }
 
-        .pdf-header p {
-            color: var(--gray-600);
-            font-size: 14px;
+        .modal-btn.vcf:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
-        .pdf-section {
-            margin-bottom: 25px;
-            padding: 20px;
+        /* Email Preview */
+        .email-preview {
             background: #f8fafc;
-            border-radius: 16px;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
             border: 1px solid var(--gray-200);
+            max-height: 300px;
+            overflow-y: auto;
         }
 
-        .pdf-section h3 {
-            color: var(--primary-blue);
-            font-size: 18px;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid var(--gray-200);
-            font-weight: 600;
-        }
-
-        .pdf-info-row {
-            display: flex;
-            margin-bottom: 12px;
-            padding: 10px 12px;
-            background: white;
-            border-radius: 8px;
-            border: 1px solid var(--gray-200);
-        }
-
-        .pdf-label {
-            width: 120px;
-            font-weight: 600;
+        .email-preview p {
+            margin: 8px 0;
             color: var(--gray-700);
         }
 
-        .pdf-value {
-            flex: 1;
-            color: var(--gray-900);
-            font-weight: 500;
-        }
-
-        .pdf-footer {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid var(--gray-200);
-            color: var(--gray-500);
-            font-size: 12px;
+        .email-preview strong {
+            color: var(--primary-blue);
         }
 
         /* Loading Spinner */
         .loading-spinner {
             display: inline-block;
-            width: 50px;
-            height: 50px;
-            border: 4px solid var(--gray-200);
-            border-top-color: var(--primary-blue);
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--gray-200);
+            border-top-color: white;
             border-radius: 50%;
             animation: spin 1s linear infinite;
+            margin-right: 8px;
         }
 
         @keyframes spin {
@@ -1051,6 +1187,15 @@
                 width: 90%;
                 right: 5%;
             }
+            
+            .selection-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .range-inputs {
+                flex-wrap: wrap;
+            }
         }
     </style>
 </head>
@@ -1182,9 +1327,32 @@
                         <i class="fas fa-plus"></i>
                         <span>Manual Enrollment</span>
                     </button>
+                    <button class="vcf-btn" onclick="openVCFExportModal()">
+                        <i class="fas fa-address-card"></i>
+                        <span>Export VCF</span>
+                    </button>
                     <button class="refresh-btn" onclick="loadEnrollments()" title="Refresh">
                         <i class="fas fa-sync-alt"></i>
                     </button>
+                </div>
+            </div>
+
+            <!-- Selection Bar -->
+            <div class="selection-bar" id="selectionBar" style="display: none;">
+                <div class="selection-controls">
+                    <div class="range-inputs">
+                        <input type="number" id="rangeStart" placeholder="Start #" min="1">
+                        <span>to</span>
+                        <input type="number" id="rangeEnd" placeholder="End #" min="1">
+                        <button class="select-all-btn" onclick="selectByRange()">Select Range</button>
+                    </div>
+                    <div class="selection-buttons">
+                        <button class="select-all-btn" onclick="selectAll()">Select All</button>
+                        <button class="clear-selection-btn" onclick="clearSelection()">Clear Selection</button>
+                    </div>
+                </div>
+                <div class="selected-count">
+                    Selected: <span id="selectedCount">0</span> students
                 </div>
             </div>
 
@@ -1254,6 +1422,7 @@
                 <table id="enrollmentsTable">
                     <thead>
                         <tr>
+                            <th class="checkbox-col"><input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll()"></th>
                             <th>Student</th>
                             <th>Course</th>
                             <th>Email</th>
@@ -1265,7 +1434,7 @@
                     </thead>
                     <tbody id="enrollmentsTableBody">
                         <tr>
-                            <td colspan="7" class="empty-state">
+                            <td colspan="8" class="empty-state">
                                 <i class="fas fa-user-graduate"></i>
                                 <h3>No enrollments found</h3>
                                 <p>Click "Manual Enrollment" to add a new enrollment</p>
@@ -1282,6 +1451,39 @@
 
     <!-- Hidden PDF Content Container -->
     <div id="pdfContent" style="display: none;"></div>
+
+    <!-- VCF Export Modal -->
+    <div class="modal-overlay" id="vcfModal">
+        <div class="modal-content">
+            <div class="modal-header vcf-header">
+                <h3><i class="fas fa-address-card"></i> Export Contacts (VCF)</h3>
+                <button class="modal-close" onclick="closeVCFModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="range-selection">
+                    <h4>Select Range to Export</h4>
+                    <div class="range-input-group">
+                        <input type="number" id="vcfStart" placeholder="Start #" min="1">
+                        <span>to</span>
+                        <input type="number" id="vcfEnd" placeholder="End #" min="1">
+                        <button class="select-all-btn" onclick="previewVCFRange()">Preview Range</button>
+                    </div>
+                </div>
+                
+                <div id="vcfPreview" class="preview-list" style="display: none;">
+                    <h4 style="padding: 12px; border-bottom: 1px solid var(--gray-200);">Contacts to Export:</h4>
+                    <div id="vcfPreviewList"></div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="modal-btn cancel" onclick="closeVCFModal()">Cancel</button>
+                    <button class="modal-btn vcf" onclick="exportSelectedAsVCF()">
+                        <i class="fas fa-download"></i> Export VCF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Add/Edit Enrollment Modal -->
     <div class="modal-overlay" id="enrollmentModal">
@@ -1367,8 +1569,46 @@
                 <div class="modal-actions">
                     <button class="modal-btn cancel" onclick="closeViewModal()">Close</button>
                     <button class="modal-btn submit" onclick="editFromView()">Edit</button>
+                    <button class="modal-btn email" onclick="sendEnrollmentEmail()">
+                        <i class="fas fa-envelope"></i> Send Email
+                    </button>
                     <button class="modal-btn delete" onclick="downloadEnrollmentPDF()" style="background: var(--gradient-danger);">
                         <i class="fas fa-file-pdf"></i> Download PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Send Email Modal -->
+    <div class="modal-overlay" id="sendEmailModal">
+        <div class="modal-content">
+            <div class="modal-header email-header">
+                <h3><i class="fas fa-envelope"></i> Send Confirmation Email</h3>
+                <button class="modal-close" onclick="closeSendEmailModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="emailPreview" class="email-preview">
+                    <p><strong>To:</strong> <span id="emailRecipient">student@example.com</span></p>
+                    <p><strong>Subject:</strong> Welcome to <span id="emailCourse">Course Name</span>! 🎓</p>
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--gray-200);">
+                        <p>Dear <span id="emailStudentName">Student</span>,</p>
+                        <p>Thank you for enrolling in <strong><span id="emailCourseName">Course</span></strong> at Quadelo Technologies!</p>
+                        <p>Your enrollment has been successfully received. Our team will contact you within 24 hours with further instructions.</p>
+                        <p>Course Details:</p>
+                        <ul>
+                            <li>Course: <span id="emailCourseDetail">Course Name</span></li>
+                            <li>Status: Pending Confirmation</li>
+                            <li>Enrollment Date: <span id="emailDate">Today</span></li>
+                        </ul>
+                        <p>If you have any questions, please contact us at quadelotech@gmail.com or call +234 704 3691 022.</p>
+                        <p>Best regards,<br>Quadelo Technologies Team</p>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-btn cancel" onclick="closeSendEmailModal()">Cancel</button>
+                    <button class="modal-btn email" onclick="confirmSendEmail()">
+                        <i class="fas fa-paper-plane"></i> Send Email
                     </button>
                 </div>
             </div>
@@ -1407,6 +1647,7 @@
         let itemsPerPage = 10;
         let selectedEnrollmentId = null;
         let currentViewEnrollment = null;
+        let selectedEnrollmentIds = new Set();
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
@@ -1430,6 +1671,259 @@
             loadCourses();
             loadEnrollments();
         });
+
+        // Format phone number to Nigerian format (+234)
+        function formatPhoneNumber(phone) {
+            if (!phone) return null;
+            
+            // Remove all non-digit characters
+            let cleaned = phone.replace(/\D/g, '');
+            
+            // If it starts with 0, replace with +234
+            if (cleaned.startsWith('0')) {
+                cleaned = '234' + cleaned.substring(1);
+            }
+            
+            // If it's 10 digits starting with 7, 8, or 9, add 234
+            if (cleaned.length === 10 && /^[789]/.test(cleaned)) {
+                cleaned = '234' + cleaned;
+            }
+            
+            // If it's already 13 digits starting with 234, keep it
+            if (cleaned.length === 13 && cleaned.startsWith('234')) {
+                return '+' + cleaned;
+            }
+            
+            // If it's 12 digits starting with 234, add +
+            if (cleaned.length === 12 && cleaned.startsWith('234')) {
+                return '+' + cleaned;
+            }
+            
+            // If it's 11 digits starting with 234, add +
+            if (cleaned.length === 11 && cleaned.startsWith('234')) {
+                return '+' + cleaned;
+            }
+            
+            // Default: if we have a number, add +234 prefix
+            if (cleaned.length > 0) {
+                if (!cleaned.startsWith('234') && cleaned.length <= 10) {
+                    return '+234' + cleaned;
+                }
+                return '+' + cleaned;
+            }
+            
+            return null;
+        }
+
+        // Generate VCF content for a list of enrollments
+        // Generate VCF content for a list of enrollments with QUAD prefix
+function generateVCFContent(enrollments) {
+    let vcfContent = '';
+    const now = new Date().toISOString();
+    
+    enrollments.forEach(enrollment => {
+        const formattedPhone = formatPhoneNumber(enrollment.phone);
+        const displayName = `QUAD - ${enrollment.name}`;
+        
+        vcfContent += `BEGIN:VCARD\r\n`;
+        vcfContent += `VERSION:3.0\r\n`;
+        vcfContent += `FN:${displayName}\r\n`;  // Display name with QUAD prefix
+        vcfContent += `ORG:Quadelo Technologies\r\n`; // Organization name
+        vcfContent += `TITLE:Student\r\n`; // Title/Role
+        
+        const nameParts = enrollment.name.split(' ');
+        const lastName = nameParts.pop() || '';
+        const firstName = nameParts.join(' ') || '';
+        vcfContent += `N:${lastName};${firstName};;;\r\n`;
+        
+        if (formattedPhone) {
+            vcfContent += `TEL;TYPE=CELL:${formattedPhone}\r\n`;
+        }
+        
+        vcfContent += `EMAIL:${enrollment.email}\r\n`;
+        vcfContent += `CATEGORIES:Students\r\n`; // Category for grouping
+        vcfContent += `NOTE:Enrolled in ${enrollment.courseName || 'course'} at Quadelo Technologies\r\n`;
+        vcfContent += `REV:${now}\r\n`;
+        vcfContent += `END:VCARD\r\n`;
+    });
+    
+    return vcfContent;
+}
+        // Download VCF file
+        function downloadVCF(content, filename = 'quadelo_contacts.vcf') {
+            const blob = new Blob([content], { type: 'text/vcard' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Open VCF Export Modal
+        function openVCFExportModal() {
+            document.getElementById('vcfStart').value = '';
+            document.getElementById('vcfEnd').value = '';
+            document.getElementById('vcfPreview').style.display = 'none';
+            document.getElementById('vcfModal').classList.add('active');
+        }
+
+        // Close VCF Modal
+        function closeVCFModal() {
+            document.getElementById('vcfModal').classList.remove('active');
+        }
+
+        // Preview VCF Range
+        function previewVCFRange() {
+            const start = parseInt(document.getElementById('vcfStart').value);
+            const end = parseInt(document.getElementById('vcfEnd').value);
+            
+            if (isNaN(start) || isNaN(end) || start < 1 || end < start || end > filteredEnrollments.length) {
+                showNotification('Please enter valid range (1 to ' + filteredEnrollments.length + ')', 'error');
+                return;
+            }
+            
+            const enrollmentsToExport = filteredEnrollments.slice(start - 1, end);
+            const previewList = document.getElementById('vcfPreviewList');
+            
+            previewList.innerHTML = enrollmentsToExport.map(e => `
+                <div class="preview-item">
+                    <div>
+                        <div class="name">${e.name}</div>
+                        <div class="phone">${formatPhoneNumber(e.phone) || 'No phone'}</div>
+                    </div>
+                    <i class="fas fa-user-check" style="color: #10b981;"></i>
+                </div>
+            `).join('');
+            
+            document.getElementById('vcfPreview').style.display = 'block';
+        }
+
+        // Export selected range as VCF
+        function exportSelectedAsVCF() {
+            const start = parseInt(document.getElementById('vcfStart').value);
+            const end = parseInt(document.getElementById('vcfEnd').value);
+            
+            if (isNaN(start) || isNaN(end) || start < 1 || end < start || end > filteredEnrollments.length) {
+                showNotification('Please enter valid range (1 to ' + filteredEnrollments.length + ')', 'error');
+                return;
+            }
+            
+            const enrollmentsToExport = filteredEnrollments.slice(start - 1, end);
+            const vcfContent = generateVCFContent(enrollmentsToExport);
+            const filename = `quadelo_contacts_${start}_to_${end}.vcf`;
+            
+            downloadVCF(vcfContent, filename);
+            showNotification(`Exported ${enrollmentsToExport.length} contacts to VCF file`, 'success');
+            closeVCFModal();
+        }
+
+        // Select all enrollments
+        function selectAll() {
+            const currentPageEnrollments = getCurrentPageEnrollments();
+            currentPageEnrollments.forEach(e => selectedEnrollmentIds.add(e._id));
+            updateSelectionUI();
+            showNotification(`Selected ${selectedEnrollmentIds.size} enrollments`, 'success');
+        }
+
+        // Clear all selections
+        function clearSelection() {
+            selectedEnrollmentIds.clear();
+            updateSelectionUI();
+            showNotification('Selection cleared', 'info');
+        }
+
+        // Select by range
+        function selectByRange() {
+            const start = parseInt(document.getElementById('rangeStart').value);
+            const end = parseInt(document.getElementById('rangeEnd').value);
+            
+            if (isNaN(start) || isNaN(end) || start < 1 || end < start || end > filteredEnrollments.length) {
+                showNotification('Please enter valid range (1 to ' + filteredEnrollments.length + ')', 'error');
+                return;
+            }
+            
+            selectedEnrollmentIds.clear();
+            
+            for (let i = start - 1; i < end; i++) {
+                if (filteredEnrollments[i]) {
+                    selectedEnrollmentIds.add(filteredEnrollments[i]._id);
+                }
+            }
+            
+            updateSelectionUI();
+            showNotification(`Selected ${selectedEnrollmentIds.size} enrollments (positions ${start}-${end})`, 'success');
+        }
+
+        // Toggle individual checkbox
+        function toggleEnrollmentSelection(id, isChecked) {
+            if (isChecked) {
+                selectedEnrollmentIds.add(id);
+            } else {
+                selectedEnrollmentIds.delete(id);
+            }
+            updateSelectionUI();
+        }
+
+        // Toggle select all checkbox
+        function toggleSelectAll() {
+            const checkbox = document.getElementById('selectAllCheckbox');
+            const currentPageEnrollments = getCurrentPageEnrollments();
+            
+            if (checkbox.checked) {
+                currentPageEnrollments.forEach(e => selectedEnrollmentIds.add(e._id));
+            } else {
+                currentPageEnrollments.forEach(e => selectedEnrollmentIds.delete(e._id));
+            }
+            
+            updateSelectionUI();
+        }
+
+        // Get current page enrollments
+        function getCurrentPageEnrollments() {
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = Math.min(start + itemsPerPage, filteredEnrollments.length);
+            return filteredEnrollments.slice(start, end);
+        }
+
+        // Update selection UI
+        function updateSelectionUI() {
+            // Update checkboxes in table
+            const checkboxes = document.querySelectorAll('.enrollment-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectedEnrollmentIds.has(checkbox.value);
+            });
+            
+            // Update select all checkbox
+            const currentPageEnrollments = getCurrentPageEnrollments();
+            const allSelected = currentPageEnrollments.length > 0 && 
+                currentPageEnrollments.every(e => selectedEnrollmentIds.has(e._id));
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            if (selectAllCheckbox) selectAllCheckbox.checked = allSelected;
+            
+            // Update selected count display
+            document.getElementById('selectedCount').textContent = selectedEnrollmentIds.size;
+            
+            // Show/hide selection bar
+            const selectionBar = document.getElementById('selectionBar');
+            if (selectedEnrollmentIds.size > 0) {
+                selectionBar.style.display = 'flex';
+            } else {
+                selectionBar.style.display = 'none';
+            }
+            
+            // Update row highlighting
+            document.querySelectorAll('#enrollmentsTableBody tr').forEach(row => {
+                const checkbox = row.querySelector('.enrollment-checkbox');
+                if (checkbox && selectedEnrollmentIds.has(checkbox.value)) {
+                    row.classList.add('selected');
+                } else if (row) {
+                    row.classList.remove('selected');
+                }
+            });
+        }
 
         // Load courses for dropdown
         async function loadCourses() {
@@ -1457,142 +1951,99 @@
         }
 
         // Load enrollments
-       // Load enrollments - FIXED to fetch ALL enrollments
-async function loadEnrollments() {
-    showLoading();
-    
-    try {
-        const token = localStorage.getItem('token');
-        
-        if (!token) {
-            throw new Error('No authentication token found');
-        }
-        
-        console.log('Fetching enrollments from database...');
-        
-        // Try admin endpoint first (if available)
-        let response = await fetch(`${API_URL}/enrollments/admin/all`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        }).catch(() => null);
-        
-        // If admin endpoint fails, try regular endpoint with large limit
-        if (!response || !response.ok) {
-            console.log('Admin endpoint not available, using regular endpoint with large limit');
-            response = await fetch(`${API_URL}/enrollments?limit=1000`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-        }
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('Enrollments data received:', data);
-        
-        if (data.success) {
-            // Handle different response structures
-            if (data.enrollments) {
-                allEnrollments = data.enrollments;
-            } else if (data.data) {
-                allEnrollments = data.data;
-            } else if (Array.isArray(data)) {
-                allEnrollments = data;
-            } else {
-                allEnrollments = [];
+        async function loadEnrollments() {
+            showLoading();
+            
+            try {
+                const token = localStorage.getItem('token');
+                
+                if (!token) {
+                    throw new Error('No authentication token found');
+                }
+                
+                console.log('Fetching enrollments from database...');
+                
+                const response = await fetch(`${API_URL}/enrollments?limit=1000`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Enrollments data received:', data);
+                
+                if (data.success) {
+                    if (data.enrollments) {
+                        allEnrollments = data.enrollments;
+                    } else if (data.data) {
+                        allEnrollments = data.data;
+                    } else if (Array.isArray(data)) {
+                        allEnrollments = data;
+                    } else {
+                        allEnrollments = [];
+                    }
+                    
+                    filteredEnrollments = [...allEnrollments];
+                    updateStats();
+                    displayEnrollments();
+                    updateSidebarBadges();
+                    showNotification(`Loaded ${allEnrollments.length} enrollments`, 'success');
+                } else {
+                    throw new Error(data.message || 'Failed to load enrollments');
+                }
+            } catch (error) {
+                console.error('Error loading enrollments:', error);
+                showNotification('Failed to load enrollments. Using sample data.', 'warning');
+                loadSampleEnrollments();
             }
             
-            // If we got paginated data with total count, we might need more pages
-            if (data.total && data.total > allEnrollments.length) {
-                await loadRemainingEnrollmentPages(token, data.total, data.page || 1, data.limit || 100);
-            } else {
-                filteredEnrollments = [...allEnrollments];
-                updateStats();
-                displayEnrollments();
-                updateSidebarBadges();
-                showNotification(`Loaded ${allEnrollments.length} enrollments`, 'success');
-            }
-        } else {
-            throw new Error(data.message || 'Failed to load enrollments');
+            hideLoading();
         }
-    } catch (error) {
-        console.error('Error loading enrollments:', error);
-        showNotification('Failed to load enrollments. Using sample data.', 'warning');
-        loadSampleEnrollments(); // Use sample data as fallback
-    }
-    
-    hideLoading();
-}
 
-// Load remaining pages if paginated
-async function loadRemainingEnrollmentPages(token, total, currentPage, limit) {
-    const totalPages = Math.ceil(total / limit);
-    allEnrollments = [];
-    
-    for (let page = 1; page <= totalPages; page++) {
-        try {
-            const response = await fetch(`${API_URL}/enrollments?limit=${limit}&page=${page}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await response.json();
+        // Sample enrollments for testing
+        function loadSampleEnrollments() {
+            const sampleCount = 15;
+            allEnrollments = [];
             
-            if (data.success && data.enrollments) {
-                allEnrollments = [...allEnrollments, ...data.enrollments];
+            const statuses = ['pending', 'confirmed', 'completed', 'cancelled'];
+            const names = ['John Doe', 'Jane Smith', 'Mike Johnson', 'Sarah Williams', 'David Brown', 'Emily Davis', 'Chris Wilson', 'Lisa Anderson'];
+            const courses = [
+                { id: '1', name: 'Full Stack Web Development' },
+                { id: '2', name: 'iOS App Development' },
+                { id: '3', name: 'Robotics and Embedded Systems' },
+                { id: '4', name: 'Data Science Fundamentals' },
+                { id: '5', name: 'Cloud Computing with AWS' }
+            ];
+            
+            for (let i = 1; i <= sampleCount; i++) {
+                const name = names[Math.floor(Math.random() * names.length)] + ' ' + i;
+                const course = courses[Math.floor(Math.random() * courses.length)];
+                const status = statuses[Math.floor(Math.random() * statuses.length)];
+                const daysAgo = Math.floor(Math.random() * 60);
+                const date = new Date();
+                date.setDate(date.getDate() - daysAgo);
+                
+                allEnrollments.push({
+                    _id: `sample${i}`,
+                    name: name,
+                    email: name.toLowerCase().replace(/\s+/g, '.') + '@example.com',
+                    phone: '0701234567' + i,
+                    courseId: course.id,
+                    courseName: course.name,
+                    status: status,
+                    enrolledAt: date.toISOString(),
+                    createdAt: date.toISOString()
+                });
             }
-        } catch (error) {
-            console.error(`Error loading page ${page}:`, error);
+            
+            filteredEnrollments = [...allEnrollments];
+            updateStats();
+            displayEnrollments();
+            updateSidebarBadges();
+            showNotification(`Loaded ${allEnrollments.length} sample enrollments`, 'info');
         }
-    }
-    
-    filteredEnrollments = [...allEnrollments];
-    updateStats();
-    displayEnrollments();
-    updateSidebarBadges();
-    showNotification(`Loaded ${allEnrollments.length} enrollments`, 'success');
-}
-
-// Sample enrollments for testing
-function loadSampleEnrollments() {
-    const sampleCount = 45; // Generate 45 sample enrollments
-    allEnrollments = [];
-    
-    const statuses = ['pending', 'confirmed', 'completed', 'cancelled'];
-    const names = ['John Doe', 'Jane Smith', 'Mike Johnson', 'Sarah Williams', 'David Brown', 'Emily Davis', 'Chris Wilson', 'Lisa Anderson'];
-    const courses = [
-        { id: '1', name: 'Full Stack Web Development' },
-        { id: '2', name: 'iOS App Development' },
-        { id: '3', name: 'Robotics and Embedded Systems' },
-        { id: '4', name: 'Data Science Fundamentals' },
-        { id: '5', name: 'Cloud Computing with AWS' }
-    ];
-    
-    for (let i = 1; i <= sampleCount; i++) {
-        const name = names[Math.floor(Math.random() * names.length)] + ' ' + i;
-        const course = courses[Math.floor(Math.random() * courses.length)];
-        const status = statuses[Math.floor(Math.random() * statuses.length)];
-        const daysAgo = Math.floor(Math.random() * 60);
-        const date = new Date();
-        date.setDate(date.getDate() - daysAgo);
-        
-        allEnrollments.push({
-            _id: `sample${i}`,
-            name: name,
-            email: name.toLowerCase().replace(/\s+/g, '.') + '@example.com',
-            phone: '+123456789' + i,
-            courseId: course.id,
-            courseName: course.name,
-            status: status,
-            enrolledAt: date.toISOString(),
-            createdAt: date.toISOString()
-        });
-    }
-    
-    filteredEnrollments = [...allEnrollments];
-    updateStats();
-    displayEnrollments();
-    updateSidebarBadges();
-    showNotification(`Loaded ${allEnrollments.length} sample enrollments`, 'info');
-}
 
         // Update statistics
         function updateStats() {
@@ -1614,7 +2065,7 @@ function loadSampleEnrollments() {
             if (filteredEnrollments.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="7" class="empty-state">
+                        <td colspan="8" class="empty-state">
                             <i class="fas fa-user-graduate"></i>
                             <h3>No enrollments found</h3>
                             <p>Click "Manual Enrollment" to add a new enrollment</p>
@@ -1633,50 +2084,59 @@ function loadSampleEnrollments() {
             tbody.innerHTML = paginatedEnrollments.map(enrollment => {
                 const date = new Date(enrollment.enrolledAt || enrollment.createdAt).toLocaleDateString();
                 const statusClass = enrollment.status || 'pending';
-                
-                // Get initials for avatar
                 const initials = enrollment.name
                     ? enrollment.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)
                     : 'ST';
+                const isSelected = selectedEnrollmentIds.has(enrollment._id);
                 
                 return `
-                <tr>
-                    <td>
-                        <div class="student-info">
-                            <div class="student-avatar">${initials}</div>
-                            <span style="font-weight: 500;">${enrollment.name}</span>
-                        </div>
-                    </td>
-                    <td style="font-weight: 500;">${enrollment.courseName || 'Course'}</td>
-                    <td>${enrollment.email}</td>
-                    <td>${enrollment.phone || '-'}</td>
-                    <td>${date}</td>
-                    <td>
-                        <span class="status-badge ${statusClass}">
-                            <i class="fas ${statusClass === 'pending' ? 'fa-clock' : statusClass === 'confirmed' ? 'fa-check-circle' : statusClass === 'completed' ? 'fa-graduation-cap' : 'fa-times-circle'}"></i>
-                            ${statusClass.charAt(0).toUpperCase() + statusClass.slice(1)}
-                        </span>
-                    </td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="action-btn view" onclick="viewEnrollment('${enrollment._id}')" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="action-btn edit" onclick="editEnrollment('${enrollment._id}')" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn pdf" onclick="downloadSingleEnrollmentPDF('${enrollment._id}')" title="Download PDF">
-                                <i class="fas fa-file-pdf"></i>
-                            </button>
-                            <button class="action-btn delete" onclick="deleteEnrollment('${enrollment._id}')" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `}).join('');
+                    <tr class="${isSelected ? 'selected' : ''}">
+                        <td class="checkbox-col">
+                            <input type="checkbox" class="enrollment-checkbox" value="${enrollment._id}" 
+                                ${isSelected ? 'checked' : ''} 
+                                onchange="toggleEnrollmentSelection('${enrollment._id}', this.checked)">
+                        </td>
+                        <td>
+                            <div class="student-info">
+                                <div class="student-avatar">${initials}</div>
+                                <span style="font-weight: 500;">${enrollment.name}</span>
+                            </div>
+                        </td>
+                        <td style="font-weight: 500;">${enrollment.courseName || 'Course'}</td>
+                        <td>${enrollment.email}</td>
+                        <td>${enrollment.phone || '-'}</td>
+                        <td>${date}</td>
+                        <td>
+                            <span class="status-badge ${statusClass}">
+                                <i class="fas ${statusClass === 'pending' ? 'fa-clock' : statusClass === 'confirmed' ? 'fa-check-circle' : statusClass === 'completed' ? 'fa-graduation-cap' : 'fa-times-circle'}"></i>
+                                ${statusClass.charAt(0).toUpperCase() + statusClass.slice(1)}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view" onclick="viewEnrollment('${enrollment._id}')" title="View">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn edit" onclick="editEnrollment('${enrollment._id}')" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn email" onclick="sendEnrollmentEmailFromList('${enrollment._id}')" title="Send Email" style="background: #10b981;">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                                <button class="action-btn pdf" onclick="downloadSingleEnrollmentPDF('${enrollment._id}')" title="Download PDF">
+                                    <i class="fas fa-file-pdf"></i>
+                                </button>
+                                <button class="action-btn delete" onclick="deleteEnrollment('${enrollment._id}')" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
 
             updatePagination();
+            updateSelectionUI();
         }
 
         // Update pagination
@@ -1691,10 +2151,8 @@ function loadSampleEnrollments() {
 
             let html = '<div style="display: flex; gap: 8px; align-items: center;">';
 
-            // Previous button
             html += `<button class="page-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i></button>`;
 
-            // Page numbers
             for (let i = 1; i <= totalPages; i++) {
                 if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
                     html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
@@ -1703,7 +2161,6 @@ function loadSampleEnrollments() {
                 }
             }
 
-            // Next button
             html += `<button class="page-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}><i class="fas fa-chevron-right"></i></button>`;
             html += '</div>';
 
@@ -1725,15 +2182,12 @@ function loadSampleEnrollments() {
             const endDate = document.getElementById('endDate').value;
 
             filteredEnrollments = allEnrollments.filter(enrollment => {
-                // Search filter
                 const matchesSearch = searchTerm === '' || 
                     enrollment.name?.toLowerCase().includes(searchTerm) ||
                     enrollment.email?.toLowerCase().includes(searchTerm);
 
-                // Status filter
                 const matchesStatus = statusFilter === 'all' || enrollment.status === statusFilter;
 
-                // Date filter
                 let matchesDate = true;
                 if (startDate && endDate) {
                     const enrollmentDate = new Date(enrollment.enrolledAt || enrollment.createdAt);
@@ -1747,8 +2201,10 @@ function loadSampleEnrollments() {
             });
 
             currentPage = 1;
+            selectedEnrollmentIds.clear();
             updateStats();
             displayEnrollments();
+            updateSelectionUI();
         }
 
         // Clear filters
@@ -1759,8 +2215,10 @@ function loadSampleEnrollments() {
             document.getElementById('endDate').value = '';
             filteredEnrollments = [...allEnrollments];
             currentPage = 1;
+            selectedEnrollmentIds.clear();
             updateStats();
             displayEnrollments();
+            updateSelectionUI();
             showNotification('Filters cleared', 'info');
         }
 
@@ -1795,6 +2253,7 @@ function loadSampleEnrollments() {
             if (!enrollment) return;
 
             currentViewEnrollment = enrollment;
+            selectedEnrollmentId = id;
 
             const date = new Date(enrollment.enrolledAt || enrollment.createdAt).toLocaleDateString('en-US', {
                 year: 'numeric',
@@ -1817,7 +2276,6 @@ function loadSampleEnrollments() {
             statusSpan.textContent = enrollment.status.charAt(0).toUpperCase() + enrollment.status.slice(1);
             statusSpan.className = `status-badge ${enrollment.status}`;
             
-            selectedEnrollmentId = id;
             document.getElementById('viewModal').classList.add('active');
         }
 
@@ -1825,6 +2283,78 @@ function loadSampleEnrollments() {
         function editFromView() {
             closeViewModal();
             editEnrollment(selectedEnrollmentId);
+        }
+
+        // Send enrollment email from view modal
+        function sendEnrollmentEmail() {
+            if (!currentViewEnrollment) return;
+            openSendEmailModal(currentViewEnrollment);
+        }
+
+        // Send enrollment email from list
+        function sendEnrollmentEmailFromList(id) {
+            const enrollment = allEnrollments.find(e => e._id === id);
+            if (!enrollment) return;
+            openSendEmailModal(enrollment);
+        }
+
+        // Open send email modal
+        function openSendEmailModal(enrollment) {
+            const date = new Date(enrollment.enrolledAt || enrollment.createdAt).toLocaleDateString();
+            
+            document.getElementById('emailRecipient').textContent = enrollment.email;
+            document.getElementById('emailStudentName').textContent = enrollment.name;
+            document.getElementById('emailCourse').textContent = enrollment.courseName || 'Course';
+            document.getElementById('emailCourseName').textContent = enrollment.courseName || 'Course';
+            document.getElementById('emailCourseDetail').textContent = enrollment.courseName || 'Course';
+            document.getElementById('emailDate').textContent = date;
+            
+            selectedEnrollmentId = enrollment._id;
+            document.getElementById('sendEmailModal').classList.add('active');
+        }
+
+        // Close send email modal
+        function closeSendEmailModal() {
+            document.getElementById('sendEmailModal').classList.remove('active');
+        }
+
+        // Confirm and send email
+        async function confirmSendEmail() {
+            if (!selectedEnrollmentId) {
+                showNotification('No enrollment selected', 'error');
+                return;
+            }
+
+            const sendBtn = document.querySelector('#sendEmailModal .modal-btn.email');
+            const originalText = sendBtn.innerHTML;
+            sendBtn.innerHTML = '<span class="loading-spinner"></span> Sending...';
+            sendBtn.disabled = true;
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_URL}/enrollments/${selectedEnrollmentId}/resend-email`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('✅ Email sent successfully!', 'success');
+                    closeSendEmailModal();
+                } else {
+                    showNotification(data.message || 'Failed to send email', 'error');
+                }
+            } catch (error) {
+                console.error('Error sending email:', error);
+                showNotification('Error connecting to server', 'error');
+            } finally {
+                sendBtn.innerHTML = originalText;
+                sendBtn.disabled = false;
+            }
         }
 
         // Delete enrollment
@@ -1891,7 +2421,6 @@ function loadSampleEnrollments() {
             try {
                 let response;
                 if (id) {
-                    // Update existing
                     response = await fetch(`${API_URL}/enrollments/${id}`, {
                         method: 'PUT',
                         headers: {
@@ -1901,7 +2430,6 @@ function loadSampleEnrollments() {
                         body: JSON.stringify(enrollmentData)
                     });
                 } else {
-                    // Create new
                     response = await fetch(`${API_URL}/enrollments`, {
                         method: 'POST',
                         headers: {
@@ -1931,7 +2459,6 @@ function loadSampleEnrollments() {
         async function downloadSingleEnrollmentPDF(id) {
             const enrollment = allEnrollments.find(e => e._id === id);
             if (!enrollment) return;
-            
             await generateEnrollmentPDF(enrollment);
         }
 
@@ -1941,7 +2468,6 @@ function loadSampleEnrollments() {
                 showNotification('No enrollment data to download', 'error');
                 return;
             }
-            
             await generateEnrollmentPDF(currentViewEnrollment);
         }
 
@@ -1958,9 +2484,7 @@ function loadSampleEnrollments() {
             });
 
             const statusText = enrollment.status.charAt(0).toUpperCase() + enrollment.status.slice(1);
-            const initials = enrollment.name.split(' ').map(n => n[0]).join('').toUpperCase();
 
-            // Create PDF content
             const pdfContent = `
                 <div class="pdf-content">
                     <div class="pdf-header">
@@ -2019,7 +2543,6 @@ function loadSampleEnrollments() {
                 </div>
             `;
 
-            // Create a temporary container for PDF generation
             const pdfContainer = document.createElement('div');
             pdfContainer.innerHTML = pdfContent;
             pdfContainer.style.padding = '20px';
@@ -2027,7 +2550,6 @@ function loadSampleEnrollments() {
             pdfContainer.style.fontFamily = 'Inter, sans-serif';
             document.body.appendChild(pdfContainer);
 
-            // PDF options
             const options = {
                 margin: [0.5, 0.5, 0.5, 0.5],
                 filename: `enrollment_${enrollment.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
@@ -2037,14 +2559,12 @@ function loadSampleEnrollments() {
             };
 
             try {
-                // Generate PDF
                 await html2pdf().from(pdfContainer).set(options).save();
                 showNotification('PDF downloaded successfully', 'success');
             } catch (error) {
                 console.error('Error generating PDF:', error);
                 showNotification('Error generating PDF', 'error');
             } finally {
-                // Clean up
                 document.body.removeChild(pdfContainer);
             }
         }
@@ -2058,7 +2578,7 @@ function loadSampleEnrollments() {
         function showLoading() {
             document.getElementById('enrollmentsTableBody').innerHTML = `
                 <tr>
-                    <td colspan="7" style="text-align: center; padding: 60px;">
+                    <td colspan="8" style="text-align: center; padding: 60px;">
                         <div class="loading-spinner" style="margin: 0 auto;"></div>
                         <p style="margin-top: 20px; color: var(--gray-500);">Loading enrollments...</p>
                     </td>
@@ -2067,9 +2587,7 @@ function loadSampleEnrollments() {
         }
 
         // Hide loading state
-        function hideLoading() {
-            // Loading removed by displayEnrollments
-        }
+        function hideLoading() {}
 
         // Show notification
         function showNotification(message, type = 'info') {
@@ -2135,12 +2653,25 @@ function loadSampleEnrollments() {
         window.closeModal = closeModal;
         window.closeViewModal = closeViewModal;
         window.closeDeleteModal = closeDeleteModal;
+        window.closeSendEmailModal = closeSendEmailModal;
         window.editFromView = editFromView;
         window.changePage = changePage;
         window.toggleMobileMenu = toggleMobileMenu;
         window.closeMobileMenu = closeMobileMenu;
         window.downloadEnrollmentPDF = downloadEnrollmentPDF;
         window.downloadSingleEnrollmentPDF = downloadSingleEnrollmentPDF;
+        window.sendEnrollmentEmail = sendEnrollmentEmail;
+        window.sendEnrollmentEmailFromList = sendEnrollmentEmailFromList;
+        window.confirmSendEmail = confirmSendEmail;
+        window.openVCFExportModal = openVCFExportModal;
+        window.closeVCFModal = closeVCFModal;
+        window.previewVCFRange = previewVCFRange;
+        window.exportSelectedAsVCF = exportSelectedAsVCF;
+        window.selectAll = selectAll;
+        window.clearSelection = clearSelection;
+        window.selectByRange = selectByRange;
+        window.toggleEnrollmentSelection = toggleEnrollmentSelection;
+        window.toggleSelectAll = toggleSelectAll;
     </script>
 </body>
 </html>
